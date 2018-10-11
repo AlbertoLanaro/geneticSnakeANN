@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import lfilter
 
-filename = './max_fitness.txt'
+filename = '../debug/max_fitness.txt'
 
 STEP = 100
 

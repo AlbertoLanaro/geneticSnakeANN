@@ -12,9 +12,9 @@ import debug
 
 # General Parameters
 MAX_X = 30
-MAX_Y = 60
-TIMEOUT = 100
-N_SNAKE = 9 # number of snakes per generation
+MAX_Y = 15
+TIMEOUT = 10
+N_SNAKE = 6 # number of snakes per generation [> 2]
 
 def init():
 	# windon + game initialization
@@ -22,11 +22,11 @@ def init():
 	curses.start_color()
 	curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
 	curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_BLACK)
-	win = curses.newwin(MAX_X, MAX_Y, 0, 0)
+	win = curses.newwin(MAX_Y, MAX_X, 0, 0)
 	win.keypad(1)
 	curses.noecho()
 	curses.curs_set(0)
-	#win.border(0) # set window borders
+	win.border(0) # set window borders
 	win.nodelay(1)
 	win.timeout(TIMEOUT)
 
@@ -40,6 +40,7 @@ if __name__ == '__main__':
 	key = None
 	while key != 27: # press 'ESC' to quit
 
+		win.border(0)
 		# flush debug file
 		debug.flush()
 

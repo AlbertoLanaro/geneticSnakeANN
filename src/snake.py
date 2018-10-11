@@ -29,10 +29,11 @@ n_class = 3 # output classes -> three possible direction
 
 class Snake:
 	def __init__(self, world, win, from_DNA=False, DNA=None):
+		self.skin_color = randint(0, 2) # TODO 
 		self.size = 1 # inital snake size
 		body_done = False # position the snake in the world + check if position is correct 
 		while not(body_done):
-			body_tmp = [[randint(1, world.max_x - 2), randint(1, world.max_y - 2)]] # initialize the head of the snake
+			body_tmp = [[randint(1, world.max_y - 2), randint(1, world.max_x - 2)]] # initialize the head of the snake
 			if not(body_tmp in world.food):
 				body_done = True
 		self.body = body_tmp
@@ -56,13 +57,13 @@ class Snake:
 			self.think(world, win) 
 			#win.addstr(0, 10, ' Fitness: ' + str(round(self.fitness, 3)) + ' [Health: ' + str(round(self.health, 3)) + ' Score: ' + str(self.score) + '] ')
 			# reduce health
-			self.health -= self.health * 0.05 # update 
+			self.health -= self.health * 0.2 # update 
 			if self.health < 1e-2:
 				self.is_dead = True
 			# update snake head position
 			self.body.insert(0, [self.body[0][0] + (self.curr_dir == 2 and 1) + (self.curr_dir == 0 and -1), self.body[0][1] + (self.curr_dir == 3 and -1) + (self.curr_dir == 1 and 1)])
-			# check if snake hit himself
-			if self.body[0] in self.body[1:] or self.body[0][0] == 0 or self.body[0][0] == world.max_x - 1 or self.body[0][1] == 0 or self.body[0][1] == world.max_y - 1: 
+			# check if snake hit himself or hit borders
+			if self.body[0] in self.body[1:] or self.body[0][0] == 0 or self.body[0][0] == world.max_y - 1 or self.body[0][1] == 0 or self.body[0][1] == world.max_x - 1: 
 				self.is_dead = True
 			# check if snake head is in some food coordinates
 			if self.body[0] in world.food: 
@@ -84,7 +85,7 @@ class Snake:
 				win.addch(last[0], last[1], ' ')
 			# update fitness
 			self.fitness = self.score / 2 + self.health
-			win.addch(self.body[0][0], self.body[0][1], 's', curses.color_pair(2))
+			win.addch(self.body[0][0], self.body[0][1], 's', curses.color_pair(self.skin_color))
 		else: # snake is dead or no health
 			for i in self.body:
 				win.addch(i[0], i[1], ' ')
@@ -105,15 +106,16 @@ class Snake:
 		if self.prev_dir == None: 
 			# 1st iteration
 			ANN_inputs = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+			next_possible_dir_list = [(self.curr_dir - 1) % 3, self.curr_dir, self.curr_dir + 1]
 		else:
-			ANN_inputs = self.get_ANN_inputs(world, win)
+			ANN_inputs, next_possible_dir_list = self.get_ANN_inputs(world, win)
 
 		debug.f_debug.write("ANN_inputs: " + str(ANN_inputs) + "\n")
 
 		# update self.curr_dir
-		self.predict(ANN_inputs, win) 
+		self.predict(ANN_inputs, next_possible_dir_list, win)
 
-	def predict(self, X, win):
+	def predict(self, X, next_possible_dir_list , win):
 		# get the hidden layer of the ANN
 		syn0_r = self.DNA[:input_len * n_hidden_units].reshape([input_len, n_hidden_units])
 		syn1_r = self.DNA[input_len * n_hidden_units:].reshape([n_hidden_units, n_class])
@@ -124,7 +126,7 @@ class Snake:
 			#debug.f_debug.write("tmp_input: " + str(tmp_input) + "\n")
 			l1 = sigmoid( np.dot(tmp_input, syn0_r) )
 			l2 = sigmoid( np.dot(l1, syn1_r) )
-			output.append( [ np.max(l2), np.argmax(l2)] )
+			output.append([ np.max(l2), next_possible_dir_list[np.argmax(l2)] ])
 
 		debug.f_debug.write("outputs: " + str(output) + "\n")
 		tmp_curr_dir = max(output)[1]
@@ -136,7 +138,7 @@ class Snake:
 		if self.prev_dir is not None:
 			if abs(tmp_curr_dir - self.prev_dir) == 2:		
 				self.curr_dir = self.prev_dir #randint(0, 3)
-				debug.f_debug.write("backwards!!\n")
+				debug.f_debug.write("backwards! keep going " + str(self.prev_dir) + "\n")
 
 		self.prev_dir = self.curr_dir
 		
@@ -180,7 +182,7 @@ class Snake:
 
 			ANN_inputs.append([min_food_distance, left_rew, go_on_rew, right_rew])
 
-		return ANN_inputs
+		return ANN_inputs, next_possible_dir_list
 
 	def get_next_possible_positions(self):
 		
@@ -244,7 +246,8 @@ class Snake:
 		return rewards given next_head_pos and the current direction of the snake
 		'''
 		# how far the snake can see
-		horizon = 10
+		horizon = min(world.max_x, world.max_y) // 2  #  max(world.max_x, world.max_y)
+		debug.f_debug.write("horizon: " + str(horizon) + " [max_x: " + str(world.max_x) + ", max_y: " + str(world.max_y) + "]\n")
 
 		# UP
 		if next_possible_dir == 0: 
@@ -269,55 +272,84 @@ class Snake:
 
 		return left_rew, go_on_rew, right_rew
 
+	def get_box_of_view(self, next_head_pos, next_possible_dir, world):
+		'''
+		what the snake sees
+                        ________
+                        |  box  |
+			sssssssssss |  of   |
+		    dir --->    | view  |
+					    --------
+		'''
+		# box of view dim	
+		w = 5 # odd
+		h = 4
+		# UP
+		if next_possible_dir == 0:
+			box_of_view = [ [next_head_pos[1] + y, next_head_pos[0] - w//2  + x] for x in range(w) for y in range(h)]
+		# RIGHT
+		elif next_possible_dir == 1:
+			box_of_view = [ [next_head_pos[1] + y, next_head_pos[0] - w//2  + x] for x in range(w) for y in range(h)]
+		# DOWN
+		elif next_possible_dir == 2:
+			box_of_view = [ [next_head_pos[1] + y, next_head_pos[0] + w//2  - x] for x in range(w) for y in range(h)]
+		# LEFT
+		elif next_possible_dir == 3:
+			box_of_view = [ [next_head_pos[1] + y, next_head_pos[0] - w//2  + x] for x in range(w) for y in range(h)]
+			
+
+		return box_of_view
+
+
 	def get_abs_left_reward(self, next_head_pos, horizon, world):
 
 		tmp_reward = 0
-		for i in range(1, horizon):
+		for i in range(horizon):
 			if [next_head_pos[0], next_head_pos[1] - i] in world.food:
 				tmp_reward = 1
-				break
+				return tmp_reward
 			elif next_head_pos[1] - i == 0 or [next_head_pos[0], next_head_pos[1] - i] in self.body:
 				tmp_reward = -1
-				break
+				return tmp_reward
 
 		return tmp_reward
 
 	def get_abs_right_reward(self, next_head_pos, horizon, world):
 
 		tmp_reward = 0
-		for i in range(1, horizon):
+		for i in range(horizon):
 			if [next_head_pos[0], next_head_pos[1] + i] in world.food:
 				tmp_reward = 1
-				break
-			elif next_head_pos[1] + i == world.max_y - 1 or [next_head_pos[0], next_head_pos[1] + i] in self.body:
+				return tmp_reward
+			elif next_head_pos[1] + i == world.max_x - 1 or [next_head_pos[0], next_head_pos[1] + i] in self.body:
 				tmp_reward = -1
-				break
+				return tmp_reward
 
 		return tmp_reward
 			
 	def get_abs_up_reward(self, next_head_pos, horizon, world):
 
 		tmp_reward = 0
-		for i in range(1, horizon):
+		for i in range(horizon):
 			if [next_head_pos[0] - i, next_head_pos[1]] in world.food:
 				tmp_reward = 1
-				break
+				return tmp_reward
 			elif (next_head_pos[0] - i) == 0 or [next_head_pos[0] - i, next_head_pos[1]] in self.body:
 				tmp_reward = -1
-				break
+				return tmp_reward
 
 		return tmp_reward
 
 	def get_abs_down_reward(self, next_head_pos, horizon, world):
 
 		tmp_reward = 0
-		for i in range(1, horizon):
+		for i in range(horizon):
 			if [next_head_pos[0] + i, next_head_pos[1]] in world.food:
 				tmp_reward = 1
-				break
-			elif (next_head_pos[0] + i) == 0 or [next_head_pos[0] + i, next_head_pos[1]] in self.body:
+				return tmp_reward
+			elif (next_head_pos[0] + i) == world.max_y - 1 or [next_head_pos[0] + i, next_head_pos[1]] in self.body:
 				tmp_reward = -1
-				break
+				return tmp_reward
 
 		return tmp_reward
 

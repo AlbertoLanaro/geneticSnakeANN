@@ -65,7 +65,7 @@ class SnakeGeneration:
 
 	def update(self, snake_world, win):
 		win.addstr(0, 1, ' ' + str(self.dead_count) + ' ')
-		win.addstr(snake_world.max_x - 1, 1, ' ' + str(round(self.max_fitness, 2)) + ' ')
+		win.addstr(snake_world.max_y - 1, 1, ' ' + str(round(self.max_fitness, 2)) + ' ')
 		for j,i in enumerate(self.snakes):
 			if i.is_dead == True:
 				self.dead_count += 1
@@ -74,10 +74,9 @@ class SnakeGeneration:
 				# perform mutation + crossover when creating a new child
 				self.add_child(snake_world, win)
 			
-			debug.f_debug.write("---------- SNAKE ID: " + str(j + 1) + "/ " + str(len(self.snakes)) + " ------------\n")
+			debug.f_debug.write("---------- SNAKE ID: " + str(j + 1) + " / " + str(len(self.snakes)) + " ------------\n")
 			# update current snake
 			i.update(snake_world, win)
-			win.addstr(snake_world.max_x - 1, snake_world.max_y - 8, ' ' + str(len(self.snakes)) + ' ')
 			# update max fitness
 			self.get_max_fitness()
 
@@ -87,7 +86,7 @@ class SnakeGeneration:
 
 		debug.f_ANN.write('p_mutation: ' + str(p_mutation) + '\n')
 
-		win.addstr(0, snake_world.max_y - 6, ' ' + str(np.round(p_mutation, 2)) + ' ')
+		win.addstr(snake_world.max_y - 6, 0, ' ' + str(np.round(p_mutation, 2)) + ' ')
 		DNA_p0_bin = dec2bin(np.array(1e2 * parent0.DNA, dtype=int))
 		DNA_p1_bin = dec2bin(np.array(1e2 * parent1.DNA, dtype=int))
 		
@@ -117,7 +116,6 @@ class SnakeGeneration:
 		p_mutation = 1 / max_fitness
 		debug.f_ANN.write('p_mutation: ' + str(p_mutation) + '\n')
 
-		win.addstr(0, snake_world.max_y - 6, ' ' + str(np.round(p_mutation, 2)) + ' ')
 		#DNA_p0_bin = dec2bin(np.array(1e2 * parent0.DNA, dtype=int))
 		#DNA_p1_bin = dec2bin(np.array(1e2 * parent1.DNA, dtype=int))
 		debug.f_ANN.write('DNA0 ' + str(parent0.DNA) + '\n')
@@ -148,6 +146,7 @@ class SnakeGeneration:
 		'''
 		Select N/2 random snakes and pick as parent the one with higher fitness
 		'''
+		'''
 		N = 3 * 2	
 		try:	
 			tmp_index = np.random.choice(range(len(self.snakes)), N, replace=False)
@@ -176,14 +175,18 @@ class SnakeGeneration:
 				parent_max_fitness1 = parent_tmp1.fitness
 
 		return parent0, parent1, max(parent_max_fitness0, parent_max_fitness1)
-
 		'''
+
 		# get the 2 snakes with higher fitness
 		fitnesses = np.array([i.fitness for i in self.snakes])
 		indeces = np.argsort(fitnesses)
 
+		debug.f_debug.write("[ PARENTS SELECTION ] parents' fitnesses: " + str(self.snakes[indeces[-1]].fitness) + ", " + str(self.snakes[indeces[-2]].fitness) + " | "
+					"all fitnesses: " + str(fitnesses) + "\n")
+
+
 		return self.snakes[indeces[-1]], self.snakes[indeces[-2]], max(self.snakes[indeces[-1]].fitness, self.snakes[indeces[-2]].fitness)
-		'''
+		
 
 
 
