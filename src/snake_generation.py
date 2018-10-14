@@ -83,6 +83,9 @@ class SnakeGeneration:
 	def crossover_mutation_bin(self, parent0, parent1, max_fitness, snake_world, win):
 		debug.f_ANN.write('-------------------' + '\n')
 		p_mutation = 1 / max_fitness
+		# set upper limit to p_mutation
+		if p_mutation > 0.5:
+			p_mutation = 0.4
 
 		debug.f_ANN.write('p_mutation: ' + str(p_mutation) + '\n')
 
@@ -93,7 +96,9 @@ class SnakeGeneration:
 		debug.f_ANN.write('DNA0 ' + str(parent0.DNA) + '\n')
 		debug.f_ANN.write('DNA1 ' + str(parent1.DNA) + '\n')
 
-		split_dim = 3
+		# random split dimension
+		split_dim = random.randint(2, 5)
+		debug.f_ANN.write("split_dim: " + str(split_dim) + "\n")
 		split0 = [DNA_p0_bin[x:x+split_dim] for x in range(0, len(DNA_p0_bin), split_dim)]
 		split1 = [DNA_p1_bin[x:x+split_dim] for x in range(0, len(DNA_p1_bin), split_dim)]	
 
@@ -114,6 +119,10 @@ class SnakeGeneration:
 		debug.f_ANN.write('--------------------------------------' + '\n')
 	
 		p_mutation = 1 / max_fitness
+		# set upper limit to p_mutation
+		if p_mutation > 0.5:
+			p_mutation = 0.4
+
 		debug.f_ANN.write('p_mutation: ' + str(p_mutation) + '\n')
 
 		#DNA_p0_bin = dec2bin(np.array(1e2 * parent0.DNA, dtype=int))
