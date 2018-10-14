@@ -137,10 +137,9 @@ class Snake:
 
 		# TODO FIX THIS -> take the second max value
 	 	# check if current direction is valid (snake cannot go backwards)
-		if self.prev_dir is not None:
-			if abs(tmp_curr_dir - self.prev_dir) == 2:		
-				self.curr_dir = self.prev_dir #randint(0, 3)
-				debug.f_debug.write("backwards! keep going " + str(self.prev_dir) + "\n")
+		if abs(tmp_curr_dir - self.prev_dir) == 2:		
+			self.curr_dir = self.prev_dir #randint(0, 3)
+			debug.f_debug.write("backwards! keep going " + str(self.prev_dir) + "\n")
 
 		self.prev_dir = self.curr_dir
 		
