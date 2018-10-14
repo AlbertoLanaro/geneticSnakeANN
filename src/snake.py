@@ -181,6 +181,13 @@ class Snake:
 			debug.f_debug.write("\tright_rew " + str(right_rew) + "\n")
 
 			ANN_inputs.append([min_food_distance, left_rew, go_on_rew, right_rew])
+			'''
+
+			curr_tmp_reward = self.get_box_of_view_rewards(next_head_pos, next_possible_dir, world)
+			curr_tmp_reward.append(min_food_distance)
+
+			ANN_inputs.append(curr_tmp_reward)	
+
 
 		return ANN_inputs, next_possible_dir_list
 
@@ -272,7 +279,7 @@ class Snake:
 
 		return left_rew, go_on_rew, right_rew
 
-	def get_box_of_view(self, next_head_pos, next_possible_dir, world):
+	def get_box_of_view_rewards(self, next_head_pos, next_possible_dir, world):
 		'''
 		what the snake sees
                         ________
@@ -281,25 +288,33 @@ class Snake:
 		    dir --->    | view  |
 					    --------
 		'''
-		# box of view dim	
-		w = 5 # odd
-		h = 4
+		# box of view dim (odd)
+		w = 5
+		h = 5
+		# create box of view
+		rewards = []
 		# UP
 		if next_possible_dir == 0:
-			box_of_view = [ [next_head_pos[1] + y, next_head_pos[0] - w//2  + x] for x in range(w) for y in range(h)]
+			box_of_view = [ [next_head_pos[0] - y, next_head_pos[1] - w//2  + x] for x in range(w) for y in range(h)]
 		# RIGHT
 		elif next_possible_dir == 1:
-			box_of_view = [ [next_head_pos[1] + y, next_head_pos[0] - w//2  + x] for x in range(w) for y in range(h)]
+			box_of_view = [ [next_head_pos[0] - h//2 + y, next_head_pos[1] + x] for y in range(h) for x in range(w)]
 		# DOWN
 		elif next_possible_dir == 2:
-			box_of_view = [ [next_head_pos[1] + y, next_head_pos[0] + w//2  - x] for x in range(w) for y in range(h)]
+			box_of_view = [ [next_head_pos[0] + y, next_head_pos[1] + w//2  - x] for x in range(w) for y in range(h)]
 		# LEFT
 		elif next_possible_dir == 3:
-			box_of_view = [ [next_head_pos[1] + y, next_head_pos[0] - w//2  + x] for x in range(w) for y in range(h)]
-			
-
-		return box_of_view
-
+			box_of_view = [ [next_head_pos[0] + h//2 - y, next_head_pos[1] - x] for y in range(h) for x in range(w)]
+		# get rewards
+		for i in box_of_view:
+			if i in world.food:
+				rewards.append(1) # food
+			elif i in self.body or i[0] <= 0 or i[1] <= 0 or i[0] >= world.max_y - 1 or i[1] >= world.max_x - 1:
+				rewards.append(-1) # world's border or snake's body
+			else:
+				rewards.append(0) # nothing special 
+		
+		return rewards
 
 	def get_abs_left_reward(self, next_head_pos, horizon, world):
 
