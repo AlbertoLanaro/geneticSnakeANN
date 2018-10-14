@@ -174,6 +174,7 @@ class Snake:
 				# no food (?)
 				min_food_distance = -1 
 
+			'''
 			left_rew, go_on_rew, right_rew  = self.get_rewards(next_head_pos, next_possible_dir, world)
 
 			debug.f_debug.write("\tmin_food_distance " + str(min_food_distance) + "\n")
