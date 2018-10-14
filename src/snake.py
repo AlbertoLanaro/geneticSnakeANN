@@ -21,8 +21,9 @@ import debug
 HEALTH_BONUS = 6 # initial health bonus
 
 # ANN params
-input_len = 4 # what snake sees
-n_hidden_units = 4 # hidden layer neurons
+# what snake sees: 1) simple: 4, 2) box of view: h * w + min_food_distance
+input_len = 5 * 5 + 1
+n_hidden_units = 5 #4 # hidden layer neurons
 n_class = 3 # output classes -> three possible direction
 
 # total number of ANN entries: input_len * n_hidden_units + n_hidden_units * n_class

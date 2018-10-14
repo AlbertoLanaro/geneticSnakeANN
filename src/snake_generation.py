@@ -69,10 +69,11 @@ class SnakeGeneration:
 		for j,i in enumerate(self.snakes):
 			if i.is_dead == True:
 				self.dead_count += 1
-				self.snakes.pop(j) # remove dead snake
 				# create a new snake by choosing as parents the snakes with max fitness
 				# perform mutation + crossover when creating a new child
 				self.add_child(snake_world, win)
+				# remove at the end beacuse maybe the dead snake had best fitness (died on a wall..)
+				self.snakes.pop(j) # remove dead snake
 			
 			debug.f_debug.write("---------- SNAKE ID: " + str(j + 1) + " / " + str(len(self.snakes)) + " ------------\n")
 			# update current snake
