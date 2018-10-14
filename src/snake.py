@@ -43,6 +43,8 @@ class Snake:
 		self.fitness = self.score / 2 + self.health # initial fitness value
 		self.prev_dir = None # previous direction
 		self.curr_dir = randint(0, 3) # current direction
+		self.prev_dir = randint(0, 3)  # previous direction
+		self.curr_dir = self.prev_dir # current direction
 		self.is_dead = False # flag to indicate if the snake is dead
 		if from_DNA: # create a snake from a given DNA
 			self.DNA = DNA
@@ -108,12 +110,7 @@ class Snake:
 		debug.f_debug.write("head at: " + str(self.body[0]) + "\n")
 		debug.f_debug.write("initial dir: " + str(self.curr_dir) + "\n")
 
-		if self.prev_dir == None: 
-			# 1st iteration
-			ANN_inputs = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-			next_possible_dir_list = [(self.curr_dir - 1) % 3, self.curr_dir, self.curr_dir + 1]
-		else:
-			ANN_inputs, next_possible_dir_list = self.get_ANN_inputs(world, win)
+		ANN_inputs, next_possible_dir_list = self.get_ANN_inputs(world, win)
 
 		debug.f_debug.write("ANN_inputs: " + str(ANN_inputs) + "\n")
 
