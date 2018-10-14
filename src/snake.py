@@ -88,16 +88,20 @@ class Snake:
 			self.fitness = self.score / 2 + self.health
 			win.addch(self.body[0][0], self.body[0][1], 's', curses.color_pair(self.skin_color))
 		else: # snake is dead or no health
-			for i in self.body:
-				win.addch(i[0], i[1], ' ')
-			self.body = []
-			self.fitness = 0
+			self.remove(win)
 			#win.border(0)
 
 		debug.f_debug.write("snake params:\n")
 		debug.f_debug.write("\tlength: " + str(len(self.body)) + "\n")
 		debug.f_debug.write("\thealth: " + str(self.health) + "\n")
 		debug.f_debug.write("\tfitness: " + str(self.fitness) + "\n")
+
+	# remove dead snake from the window
+	def remove(self, win):
+		for i in self.body:
+			win.addch(i[0], i[1], ' ')
+		self.body = []
+		self.fitness = 0
 
 	def think(self, world, win):
 
