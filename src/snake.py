@@ -21,12 +21,17 @@ import debug
 HEALTH_BONUS = 6 # initial health bonus
 
 # ANN params
-# what snake sees: 1) simple: 4, 2) box of view: h * w + min_food_distance
-input_len = 5 * 5 + 1
+# what snake sees: 1) simple: 4, 2) box of view: h * w + nromalized min_food_distance + normalized snake head pos
+input_len = 5 * 5 + 1 + 2
 n_hidden_units = 5 #4 # hidden layer neurons
 n_class = 3 # output classes -> three possible direction
 
 # total number of ANN entries: input_len * n_hidden_units + n_hidden_units * n_class
+
+def compute_min_food_dist(head_pos, world):
+			
+	return min([np.sqrt((head_pos[0] - world.food[i][0])**2 + (head_pos[1] - world.food[i][1])**2)
+			for i in range(len(world.food)) if len(world.food[i]) > 0])
 
 class Snake:
 	def __init__(self, world, win, from_DNA=False, DNA=None):
@@ -40,12 +45,11 @@ class Snake:
 		self.body = body_tmp
 		self.score = 0 # inital score value
 		self.health = HEALTH_BONUS # initla health value
-		self.fitness = self.score / 2 + self.health # initial fitness value
-		self.prev_dir = None # previous direction
-		self.curr_dir = randint(0, 3) # current direction
+		self.fitness = self.health # initial fitness value
 		self.prev_dir = randint(0, 3)  # previous direction
 		self.curr_dir = self.prev_dir # current direction
 		self.is_dead = False # flag to indicate if the snake is dead
+		self.last_food_distance = -1 # previous food distance
 		if from_DNA: # create a snake from a given DNA
 			self.DNA = DNA
 		else: # create a snake with a 'random brain'
@@ -59,9 +63,18 @@ class Snake:
 			# get next direction
 			self.think(world, win) 
 			#win.addstr(0, 10, ' Fitness: ' + str(round(self.fitness, 3)) + ' [Health: ' + str(round(self.health, 3)) + ' Score: ' + str(self.score) + '] ')
-			# reduce health
-			self.health -= self.health * 0.2 # update 
-			if self.health < 1e-2:
+			
+			# check if new food distance is higher than previous one
+			# -> disourage snake to step away from food!
+			curr_food_distance = compute_min_food_dist(self.body[0], world)
+			debug.f_debug.write("min food dist " + str(curr_food_distance) + "\n")
+			# if curr_food_distance >= self.last_food_distance:
+			# 	self.health -= self.health * 0.1 # update
+			# 	debug.f_debug.write("stepped away from food!\n")
+			self.health -= self.health * 0.1 # update
+			self.last_food_distance = curr_food_distance
+			
+			if self.health < 1e-2 or self.fitness < 1e-2:
 				self.is_dead = True
 			# update snake head position
 			self.body.insert(0, [self.body[0][0] + (self.curr_dir == 2 and 1) + (self.curr_dir == 0 and -1), self.body[0][1] + (self.curr_dir == 3 and -1) + (self.curr_dir == 1 and 1)])
@@ -94,6 +107,7 @@ class Snake:
 			#win.border(0)
 
 		debug.f_debug.write("snake params:\n")
+		debug.f_debug.write("\tdead: " + str(self.is_dead) + "\n")
 		debug.f_debug.write("\tlength: " + str(len(self.body)) + "\n")
 		debug.f_debug.write("\thealth: " + str(self.health) + "\n")
 		debug.f_debug.write("\tfitness: " + str(self.fitness) + "\n")
@@ -103,7 +117,7 @@ class Snake:
 		for i in self.body:
 			win.addch(i[0], i[1], ' ')
 		self.body = []
-		self.fitness = 0
+		#self.fitness = 0
 
 	def think(self, world, win):
 
@@ -164,16 +178,14 @@ class Snake:
 			
 			try:
 				# retrieve closest food
-				min_food_distance = min([ np.sqrt( (next_head_pos[0] - world.food[i][0])**2 + (next_head_pos[1] - world.food[i][1])**2 )
-				for i in range(len(world.food)) if len(world.food[i]) > 0])	
+				min_food_distance = compute_min_food_dist(next_head_pos , world)
 			 	# normalize to 0/1
 				min_food_distance /= np.sqrt(world.max_y ** 2 + world.max_x ** 2)
 				# shift to -1/1 and reverse sign -> 1 is better
 				min_food_distance = - ( 2 * min_food_distance - 1) 
 			except:
 				# no food (?)
-				min_food_distance = -1 
-
+				min_food_distance = -1 			
 			'''
 			left_rew, go_on_rew, right_rew  = self.get_rewards(next_head_pos, next_possible_dir, world)
 
@@ -184,9 +196,18 @@ class Snake:
 
 			ANN_inputs.append([min_food_distance, left_rew, go_on_rew, right_rew])
 			'''
-
+			# create current ANN inputs
+			# box of view
 			curr_tmp_reward = self.get_box_of_view_rewards(next_head_pos, next_possible_dir, world)
+			# normalized min food distance
 			curr_tmp_reward.append(min_food_distance)
+			# normalized snake head position 
+			curr_y = self.body[0][0] / world.max_y
+			curr_y = curr_y * 2 - 1
+			curr_x = self.body[0][1] / world.max_x
+			curr_x = curr_x * 2 - 1
+			curr_tmp_reward.append(curr_y)
+			curr_tmp_reward.append(curr_x)
 
 			ANN_inputs.append(curr_tmp_reward)	
 
