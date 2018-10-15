@@ -64,7 +64,24 @@ class SnakeGeneration:
 			if self.snakes[i].fitness > best_fitness:
 				self.max_fitness = self.snakes[i].fitness
 
-	def update(self, snake_world, win):
+	def pop_weakest_and_dead_snakes(self, N, dead_idx, world, win):
+		fitnesses = np.array([i.fitness if i.is_dead == False else 100 for i in self.snakes])
+		indeces = list(np.argsort(fitnesses)[:N])
+		# append dead snake idx
+		for n in dead_idx:
+			indeces.append(n)
+		# prepare to pop
+		indeces = np.sort(indeces)[::-1]
+		debug.f_debug.write("indeces" + str(indeces) + "\n")
+
+		# remove weakest snake from population
+		for i in indeces:
+			#debug.f_debug.write("\tfitness " + str(self.snakes[i].fitness) + "\n")
+			self.snakes.pop(i)
+			#self.snakes[i].is_dead = True
+			#self.snakes[i].update(world, win)
+			
+			
 	def update(self, world, win):
 
 		win.addstr(0, 1, ' ' + str(self.dead_count) + ' ')
