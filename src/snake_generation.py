@@ -65,22 +65,34 @@ class SnakeGeneration:
 				self.max_fitness = self.snakes[i].fitness
 
 	def update(self, snake_world, win):
+	def update(self, world, win):
+
 		win.addstr(0, 1, ' ' + str(self.dead_count) + ' ')
 		win.addstr(world.max_y - 1, 1, ' ' + str(round(self.max_fitness, 2)) + ' ')
+		# detect which snakes have died during last iteration
+		dead_idx = []
 		for j,i in enumerate(self.snakes):
 			if i.is_dead == True:
 				self.dead_count += 1
-				# create a new snake by choosing as parents the snakes with max fitness
-				# perform mutation + crossover when creating a new child
-				self.add_child(snake_world, win)
-				# remove at the end beacuse maybe the dead snake had best fitness (died on a wall..)
-				self.snakes.pop(j) # remove dead snake
+				dead_idx.append(j)
 			
-			debug.f_debug.write("---------- SNAKE ID: " + str(j + 1) + " / " + str(len(self.snakes)) + " ------------\n")
+			debug.f_debug.write("---------- SNAKE ID: " + str(j) + " / " + str(len(self.snakes) - 1) + " ------------\n")
 			# update current snake
-			i.update(snake_world, win)
-			# update max fitness
-			self.get_max_fitness()
+			i.update(world, win)
+
+		dead_idx = np.sort(dead_idx)[::-1]
+		debug.f_debug.write("dead_idx" + str(dead_idx) + "\n")
+		# create new snakes
+		new_snakes = []
+		for s in dead_idx:
+			new_snakes.append(self.add_child(world, win))
+			self.snakes.pop(s)
+		# append new snakes to current generation
+		for s in new_snakes:
+			self.snakes.append(s)
+		
+		# update max fitness
+		self.get_max_fitness()
 
 	def crossover_mutation_bin(self, parent0, parent1, max_fitness, world, win):
 		debug.f_ANN.write('-------------------' + '\n')
