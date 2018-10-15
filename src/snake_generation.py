@@ -125,13 +125,15 @@ class SnakeGeneration:
 		if p_mutation > 0.5:
 			p_mutation = 0.4
 
+		# random split dimension
+		split_dim = random.randint(2, 5)
 		debug.f_ANN.write('p_mutation: ' + str(p_mutation) + '\n')
+		debug.f_ANN.write('split_dim: ' + str(split_dim) + '\n')
 
 		#DNA_p0_bin = dec2bin(np.array(1e2 * parent0.DNA, dtype=int))
 		#DNA_p1_bin = dec2bin(np.array(1e2 * parent1.DNA, dtype=int))
 		debug.f_ANN.write('DNA0 ' + str(parent0.DNA) + '\n')
 		debug.f_ANN.write('DNA1 ' + str(parent1.DNA) + '\n')
-		split_dim = 3
 		#split0 = [parent0.DNA[x:x+split_dim] for x in range(0, len(parent0.DNA), split_dim)]
 		#split1 = [parent0.DNA[x:x+split_dim] for x in range(0, len(parent1.DNA), split_dim)]	
 		newDNA = np.zeros_like(parent0.DNA)
