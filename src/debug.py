@@ -4,10 +4,10 @@ global f_debug
 global f_fitness
 global f_ANN
 
-f_debug = open("../debug/debug.txt", "w")
-f_fitness = open('../debug/max_fitness.txt', 'w')
-f_ANN = open('../debug/ANN.txt', 'w')
-
+f_fitness = open('/tmp/max_fitness.txt', 'w')
+f_ANN = open('/tmp/ANN.txt', 'w')
+f_debug = open("/tmp/debug.txt", "w")
+    
 def flush():
     # flush data to file    
     f_debug.flush()
