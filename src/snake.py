@@ -18,6 +18,7 @@ from time import time
 import os
 import debug
 
+
 HEALTH_BONUS = 6 # initial health bonus
 
 # ANN params
@@ -29,95 +30,90 @@ n_class = 3 # output classes -> three possible direction
 # total number of ANN entries: input_len * n_hidden_units + n_hidden_units * n_class
 
 def compute_min_food_dist(head_pos, world):
-			
+
 	return min([np.sqrt((head_pos[0] - world.food[i][0])**2 + (head_pos[1] - world.food[i][1])**2)
 			for i in range(len(world.food)) if len(world.food[i]) > 0])
 
 class Snake:
-	def __init__(self, world, win, from_DNA=False, DNA=None):
-		self.skin_color = randint(0, 2) # TODO 
-		self.size = 1 # inital snake size
-		body_done = False # position the snake in the world + check if position is correct 
-		while not(body_done):
-			body_tmp = [[randint(1, world.max_y - 2), randint(1, world.max_x - 2)]] # initialize the head of the snake
-			if not(body_tmp in world.food):
-				body_done = True
-		self.body = body_tmp
+	def __init__(self, world, color, DNA=None):
+		self.color = color
+		self.cube = pygame.Surface((SCALE, SCALE))
+		self.cube.fill(color)
+		# inital snake size
+		self.world = world
+		self.size = 1
+		#define head start
+		self.body =  [[randint(1, world.max_y - 2), randint(1, world.max_x - 2)]]
 		self.score = 0 # inital score value
 		self.health = HEALTH_BONUS # initla health value
 		self.fitness = self.health # initial fitness value
 		self.prev_dir = randint(0, 3)  # previous direction
 		self.curr_dir = self.prev_dir # current direction
 		self.is_dead = False # flag to indicate if the snake is dead
-		self.last_food_distance = -1 # previous food distance
-		if from_DNA: # create a snake from a given DNA
+		if DNA != None: # create a snake from a given DNA
 			self.DNA = DNA
 		else: # create a snake with a 'random brain'
 			# initialize brain params
-			self.syn0 = 2 * np.random.random(input_len * n_hidden_units) - 1 
+			self.syn0 = 2 * np.random.random(input_len * n_hidden_units) - 1
 			self.syn1 = 2 * np.random.random(n_hidden_units * n_class) - 1
 			self.DNA = np.hstack([self.syn0, self.syn1])
 
-	def update(self, world, win):
+	def update(self, field):
 		if not(self.is_dead):
+			ret = True
 			# get next direction
-			self.think(world, win) 
+			self.think(world, win)
 			#win.addstr(0, 10, ' Fitness: ' + str(round(self.fitness, 3)) + ' [Health: ' + str(round(self.health, 3)) + ' Score: ' + str(self.score) + '] ')
-			
-			# check if new food distance is higher than previous one
-			# -> disourage snake to step away from food!
-			curr_food_distance = compute_min_food_dist(self.body[0], world)
-			debug.f_debug.write("min food dist " + str(curr_food_distance) + "\n")
+
+			if DEBUG:
+				debug.f_debug.write("min food dist " + str(curr_food_distance) + "\n")
 			# if curr_food_distance >= self.last_food_distance:
 			# 	self.health -= self.health * 0.1 # update
 			# 	debug.f_debug.write("stepped away from food!\n")
+
 			self.health -= self.health * 0.1 # update
-			self.last_food_distance = curr_food_distance
-			
+
 			if self.health < 1e-2 or self.fitness < 1e-2:
 				self.is_dead = True
-			# update snake head position
-			self.body.insert(0, [self.body[0][0] + (self.curr_dir == 2 and 1) + (self.curr_dir == 0 and -1), self.body[0][1] + (self.curr_dir == 3 and -1) + (self.curr_dir == 1 and 1)])
-			# check if snake hit himself or hit borders
-			if self.body[0] in self.body[1:] or self.body[0][0] == 0 or self.body[0][0] == world.max_y - 1 or self.body[0][1] == 0 or self.body[0][1] == world.max_x - 1: 
-				self.is_dead = True
-			# check if snake head is in some food coordinates
-			if self.body[0] in world.food: 
-				# detect the food index
-				food_indx = [i for i, x in enumerate(world.food) if x == self.body[0]] 
-				# delete eaten food
-				food_coord = world.food[food_indx[0]]
-				win.addch(food_coord[0], food_coord[1], ' ') 
-				world.food[food_indx[0]] = []
-				# update score
-				self.score += 1
-				self.health += (HEALTH_BONUS * 0.5)
-				# check if saturated health
-				if self.health > 3 * HEALTH_BONUS: # max possibile health is reached!
-					self.health = 3 * HEALTH_BONUS
-			else: 
-				# update snake's body
-				last = self.body.pop()
-				win.addch(last[0], last[1], ' ')
-			# update fitness
-			self.fitness = self.score / 2 + self.health
-			win.addch(self.body[0][0], self.body[0][1], 's', curses.color_pair(self.skin_color))
-		else: # snake is dead or no health
-			self.remove(win)
-			#win.border(0)
 
-		debug.f_debug.write("snake params:\n")
-		debug.f_debug.write("\tdead: " + str(self.is_dead) + "\n")
-		debug.f_debug.write("\tlength: " + str(len(self.body)) + "\n")
-		debug.f_debug.write("\thealth: " + str(self.health) + "\n")
-		debug.f_debug.write("\tfitness: " + str(self.fitness) + "\n")
+			self.body.insert(0, [self.body[0][0] + (self.curr_dir == 2 and 1) +
+                (self.curr_dir == 0 and -1), self.body[0][1] +
+                (self.curr_dir == 3 and -1) + (self.curr_dir == 1 and 1)])
 
-	# remove dead snake from the window
-	def remove(self, win):
-		for i in self.body:
-			win.addch(i[0], i[1], ' ')
-		self.body = []
-		#self.fitness = 0
+            # check if snake hit himself or hit borders
+            if self.body[0] in self.body[1:] or self.body[0][0] == 0 or
+                            self.body[0][0] == self.world.max_y - 1 or
+                            self.body[0][1] == 0 or self.body[0][1] == self.world.max_x - 1:
+                self.is_dead = True
+            # check if snake head is in some food coordinates
+            if self.body[0] == self.world.food:
+                # update score
+                self.score += 1
+                self.health += (HEALTH_BONUS * 0.5)
+                # check if saturated health
+                if self.health > 3 * HEALTH_BONUS: # max possibile health is reached!
+                    self.health = 3 * HEALTH_BONUS
+                self.world.createFood()
+            else:
+                # update snake's body
+                last = self.body.pop()
+			self.show(field)
+		else:
+			ret = False
+		if DEBUG:
+			debug.f_debug.write("snake params:\n")
+			debug.f_debug.write("\tdead: " + str(self.is_dead) + "\n")
+			debug.f_debug.write("\tlength: " + str(len(self.body)) + "\n")
+			debug.f_debug.write("\thealth: " + str(self.health) + "\n")
+			debug.f_debug.write("\tfitness: " + str(self.fitness) + "\n")
+		return ret
+
+	def show(self, field):
+		for bit in self.body:
+            s.blit(self.cube, (bit[0] * 10, (N - bit[1] - 1) * 10))
+        s.blit(self.cube, (self.world.food[0] * 10, (N - self.world.food[1]-1) * 10))
+
+
 
 	def think(self, world, win):
 
@@ -151,12 +147,12 @@ class Snake:
 
 		# TODO FIX THIS -> take the second max value
 	 	# check if current direction is valid (snake cannot go backwards)
-		if abs(tmp_curr_dir - self.prev_dir) == 2:		
+		if abs(tmp_curr_dir - self.prev_dir) == 2:
 			self.curr_dir = self.prev_dir #randint(0, 3)
 			debug.f_debug.write("backwards! keep going " + str(self.prev_dir) + "\n")
 
 		self.prev_dir = self.curr_dir
-		
+
 	def get_ANN_inputs(self, world, win):
 		'''
 		rewards:
@@ -167,25 +163,25 @@ class Snake:
 
 		# define next head pos
 		# list of lists that contains the rewards for the three possible future direction of the snake
-		ANN_inputs = [] 
+		ANN_inputs = []
 		next_head_pos_list, next_possible_dir_list = self.get_next_possible_positions()
 
 		debug.f_debug.write("food coord: " + str(world.food) + "\n")
-		
+
 		for next_head_pos, next_possible_dir in zip(next_head_pos_list, next_possible_dir_list):
 
 			debug.f_debug.write("next_head_pos: " + str(next_head_pos) + " | next_possible_dir: " + str(next_possible_dir) +  "\n")
-			
+
 			try:
 				# retrieve closest food
 				min_food_distance = compute_min_food_dist(next_head_pos , world)
 			 	# normalize to 0/1
 				min_food_distance /= np.sqrt(world.max_y ** 2 + world.max_x ** 2)
 				# shift to -1/1 and reverse sign -> 1 is better
-				min_food_distance = - ( 2 * min_food_distance - 1) 
+				min_food_distance = - ( 2 * min_food_distance - 1)
 			except:
 				# no food (?)
-				min_food_distance = -1 			
+				min_food_distance = -1
 			'''
 			left_rew, go_on_rew, right_rew  = self.get_rewards(next_head_pos, next_possible_dir, world)
 
@@ -201,7 +197,7 @@ class Snake:
 			curr_tmp_reward = self.get_box_of_view_rewards(next_head_pos, next_possible_dir, world)
 			# normalized min food distance
 			curr_tmp_reward.append(min_food_distance)
-			# normalized snake head position 
+			# normalized snake head position
 			curr_y = self.body[0][0] / world.max_y
 			curr_y = curr_y * 2 - 1
 			curr_x = self.body[0][1] / world.max_x
@@ -209,19 +205,19 @@ class Snake:
 			curr_tmp_reward.append(curr_y)
 			curr_tmp_reward.append(curr_x)
 
-			ANN_inputs.append(curr_tmp_reward)	
+			ANN_inputs.append(curr_tmp_reward)
 
 
 		return ANN_inputs, next_possible_dir_list
 
 	def get_next_possible_positions(self):
-		
+
 		curr_head_pos = self.body[0]
 		next_pos = []
 		next_possible_dir = []
 
 		# snake is going UP
-		if self.curr_dir == 0: 
+		if self.curr_dir == 0:
 			# left
 			next_pos.append([ curr_head_pos[0], curr_head_pos[1] - 1 ])
 			next_possible_dir.append(3)
@@ -280,7 +276,7 @@ class Snake:
 		debug.f_debug.write("horizon: " + str(horizon) + " [max_x: " + str(world.max_x) + ", max_y: " + str(world.max_y) + "]\n")
 
 		# UP
-		if next_possible_dir == 0: 
+		if next_possible_dir == 0:
 			left_rew = self.get_abs_left_reward(next_head_pos, horizon, world)
 			go_on_rew = self.get_abs_up_reward(next_head_pos, horizon, world)
 			right_rew = self.get_abs_right_reward(next_head_pos, horizon, world)
@@ -335,8 +331,8 @@ class Snake:
 			elif i in self.body or i[0] <= 0 or i[1] <= 0 or i[0] >= world.max_y - 1 or i[1] >= world.max_x - 1:
 				rewards.append(-1) # world's border or snake's body
 			else:
-				rewards.append(0) # nothing special 
-		
+				rewards.append(0) # nothing special
+
 		return rewards
 
 	def get_abs_left_reward(self, next_head_pos, horizon, world):
@@ -364,7 +360,7 @@ class Snake:
 				return tmp_reward
 
 		return tmp_reward
-			
+
 	def get_abs_up_reward(self, next_head_pos, horizon, world):
 
 		tmp_reward = 0
@@ -390,5 +386,3 @@ class Snake:
 				return tmp_reward
 
 		return tmp_reward
-
-
