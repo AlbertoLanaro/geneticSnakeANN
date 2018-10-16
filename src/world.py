@@ -20,10 +20,10 @@ from random import randint
 import itertools 
 import debug
 
-N_FOOD = 10
+N_FOOD = 5
 MIN_FOOD = N_FOOD * 0.5
 MAX_FOOD = N_FOOD * 1.5
-FOOD_TIMING = 20 # new food appears after FOOD_TIMING iterations
+FOOD_TIMING = 5  # new food appears after FOOD_TIMING iterations
 class World:
 
 	def __init__(self, win, max_x, max_y):

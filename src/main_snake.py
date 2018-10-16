@@ -11,10 +11,10 @@ import numpy as np
 import debug
 
 # General Parameters
-MAX_X = 30
-MAX_Y = 15
-TIMEOUT = 10
-N_SNAKE = 6 # number of snakes per generation [> 2]
+MAX_X = 20
+MAX_Y = 10
+TIMEOUT = 2
+N_SNAKE = 8 # number of snakes per generation [> 2]
 
 def init():
 	# windon + game initialization

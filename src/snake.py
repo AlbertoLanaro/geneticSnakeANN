@@ -21,9 +21,8 @@ import debug
 HEALTH_BONUS = 6 # initial health bonus
 
 # ANN params
-# what snake sees: 1) simple: 4, 2) box of view: h * w + nromalized min_food_distance + normalized snake head pos
-input_len = 5 * 5 + 1 + 2
-n_hidden_units = 5 #4 # hidden layer neurons
+input_len = 19 * 9 + 3
+n_hidden_units = 5
 n_class = 3 # output classes -> three possible direction
 
 # total number of ANN entries: input_len * n_hidden_units + n_hidden_units * n_class
@@ -68,10 +67,10 @@ class Snake:
 			# -> disourage snake to step away from food!
 			curr_food_distance = compute_min_food_dist(self.body[0], world)
 			debug.f_debug.write("min food dist " + str(curr_food_distance) + "\n")
-			# if curr_food_distance >= self.last_food_distance:
-			# 	self.health -= self.health * 0.1 # update
-			# 	debug.f_debug.write("stepped away from food!\n")
-			self.health -= self.health * 0.1 # update
+			if curr_food_distance >= self.last_food_distance:
+			 	self.health -= self.health * 0.2 # update
+			 	debug.f_debug.write("stepped away from food!\n")
+			#self.health -= self.health * 0.1 # update
 			self.last_food_distance = curr_food_distance
 			
 			if self.health < 1e-2 or self.fitness < 1e-2:
@@ -123,8 +122,10 @@ class Snake:
 
 		debug.f_debug.write("head at: " + str(self.body[0]) + "\n")
 		debug.f_debug.write("initial dir: " + str(self.curr_dir) + "\n")
+		
+		_, next_possible_dir_list = self.get_next_possible_positions()
 
-		ANN_inputs, next_possible_dir_list = self.get_ANN_inputs(world, win)
+		ANN_inputs = self.get_ANN_inputs(world, win)
 
 		debug.f_debug.write("ANN_inputs: " + str(ANN_inputs) + "\n")
 
@@ -137,25 +138,34 @@ class Snake:
 		syn1_r = self.DNA[input_len * n_hidden_units:].reshape([n_hidden_units, n_class])
 
 		# compute ANN output for the three possible directions
-		output = []
-		for tmp_input in X:
-			#debug.f_debug.write("tmp_input: " + str(tmp_input) + "\n")
-			l1 = sigmoid( np.dot(tmp_input, syn0_r) )
-			l2 = sigmoid( np.dot(l1, syn1_r) )
-			output.append([ np.max(l2), next_possible_dir_list[np.argmax(l2)] ])
-
-		debug.f_debug.write("outputs: " + str(output) + "\n")
-		tmp_curr_dir = max(output)[1]
-		self.curr_dir = tmp_curr_dir
+		#debug.f_debug.write("tmp_input: " + str(tmp_input) + "\n")
+		l1 = sigmoid( np.dot(X, syn0_r) )
+		l2 = sigmoid( np.dot(l1, syn1_r) )
+		output = next_possible_dir_list[np.argmax(l2)]
+		self.curr_dir = output
 		debug.f_debug.write("predicted dir: " + str(self.curr_dir) + "\n")
 
 		# TODO FIX THIS -> take the second max value
 	 	# check if current direction is valid (snake cannot go backwards)
-		if abs(tmp_curr_dir - self.prev_dir) == 2:		
-			self.curr_dir = self.prev_dir #randint(0, 3)
-			debug.f_debug.write("backwards! keep going " + str(self.prev_dir) + "\n")
+		if abs(output - self.prev_dir) == 2:		
+			#self.curr_dir = self.prev_dir #randint(0, 3)
+			self.is_dead = True
+			debug.f_debug.write("going back! snake is dead " + str(self.prev_dir) + "\n")
 
 		self.prev_dir = self.curr_dir
+
+	def get_rewards_from_world(self, world):
+		rewards = []
+		for i in range(world.max_y - 1):	
+			for j in range(world.max_x - 1):
+				if [i,j] in world.food:
+					rewards.append(1)  # food
+				elif [i,j] in self.body or i == 0 or j == 0 or i == world.max_y - 1 or j == world.max_x - 1:
+					rewards.append(-1)  # world's border or snake's body
+				else:
+					rewards.append(0)  # nothing special
+
+		return rewards
 		
 	def get_ANN_inputs(self, world, win):
 		'''
@@ -164,55 +174,35 @@ class Snake:
 			food = 1
 			nothing = 0
 		'''
-
+		''
 		# define next head pos
 		# list of lists that contains the rewards for the three possible future direction of the snake
-		ANN_inputs = [] 
-		next_head_pos_list, next_possible_dir_list = self.get_next_possible_positions()
-
 		debug.f_debug.write("food coord: " + str(world.food) + "\n")
+					
+		try:
+			# retrieve closest food
+			min_food_distance = compute_min_food_dist(self.body[0] , world)
+			# normalize to 0/1
+			min_food_distance /= np.sqrt(world.max_y ** 2 + world.max_x ** 2)
+			# shift to -1/1 and reverse sign -> 1 is better
+			min_food_distance = - ( 2 * min_food_distance - 1) 
+		except:
+			# no food (?)
+			min_food_distance = -1 			
+
+		# 	# create current ANN inputs		
+		curr_tmp_reward = self.get_rewards_from_world(world)
+		# normalized min food distance
+		curr_tmp_reward.append(min_food_distance)
+		# normalized snake head position
+		curr_y = self.body[0][0] / world.max_y
+		curr_y = curr_y * 2 - 1
+		curr_x = self.body[0][1] / world.max_x
+		curr_x = curr_x * 2 - 1
+		curr_tmp_reward.append(curr_y)
+		curr_tmp_reward.append(curr_x)
 		
-		for next_head_pos, next_possible_dir in zip(next_head_pos_list, next_possible_dir_list):
-
-			debug.f_debug.write("next_head_pos: " + str(next_head_pos) + " | next_possible_dir: " + str(next_possible_dir) +  "\n")
-			
-			try:
-				# retrieve closest food
-				min_food_distance = compute_min_food_dist(next_head_pos , world)
-			 	# normalize to 0/1
-				min_food_distance /= np.sqrt(world.max_y ** 2 + world.max_x ** 2)
-				# shift to -1/1 and reverse sign -> 1 is better
-				min_food_distance = - ( 2 * min_food_distance - 1) 
-			except:
-				# no food (?)
-				min_food_distance = -1 			
-			'''
-			left_rew, go_on_rew, right_rew  = self.get_rewards(next_head_pos, next_possible_dir, world)
-
-			debug.f_debug.write("\tmin_food_distance " + str(min_food_distance) + "\n")
-			debug.f_debug.write("\tleft_rew " + str(left_rew) + "\n")
-			debug.f_debug.write("\tgo_on_rew " + str(go_on_rew) + "\n")
-			debug.f_debug.write("\tright_rew " + str(right_rew) + "\n")
-
-			ANN_inputs.append([min_food_distance, left_rew, go_on_rew, right_rew])
-			'''
-			# create current ANN inputs
-			# box of view
-			curr_tmp_reward = self.get_box_of_view_rewards(next_head_pos, next_possible_dir, world)
-			# normalized min food distance
-			curr_tmp_reward.append(min_food_distance)
-			# normalized snake head position 
-			curr_y = self.body[0][0] / world.max_y
-			curr_y = curr_y * 2 - 1
-			curr_x = self.body[0][1] / world.max_x
-			curr_x = curr_x * 2 - 1
-			curr_tmp_reward.append(curr_y)
-			curr_tmp_reward.append(curr_x)
-
-			ANN_inputs.append(curr_tmp_reward)	
-
-
-		return ANN_inputs, next_possible_dir_list
+		return curr_tmp_reward
 
 	def get_next_possible_positions(self):
 		

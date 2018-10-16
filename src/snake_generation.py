@@ -2,14 +2,13 @@ import snake
 import numpy as np
 import random
 import debug
-import math
 
-def create_snake_gen(world, win, n):
+def create_snake_gen(snake_world, win, n):
 	# create new popolation of snakes
-	snakes = [snake.Snake(world, win)]
+	snakes = [snake.Snake(snake_world, win)]
 	snakes_bodies = [snakes[0].body]
 	while len(snakes) < n:
-		tmp_snake = snake.Snake(world, win)
+		tmp_snake = snake.Snake(snake_world, win)
 		# check if snake's body is placed in an empty space
 		if not(tmp_snake.body[0] in snakes_bodies):
 			snakes.append(tmp_snake)
@@ -52,8 +51,8 @@ def mutate(x, p_mutation):
 			x[i] = 2 * random.random() - 1
 
 class SnakeGeneration:
-	def __init__(self, n_snakes, world, win):
-		self.snakes = create_snake_gen(world, win, n_snakes)
+	def __init__(self, n_snakes, snake_world, win):
+		self.snakes = create_snake_gen(snake_world, win, n_snakes)
 		self.len = n_snakes
 		self.dead_count = 0
 		self.max_fitness = -1
@@ -64,54 +63,26 @@ class SnakeGeneration:
 			if self.snakes[i].fitness > best_fitness:
 				self.max_fitness = self.snakes[i].fitness
 
-	def pop_weakest_and_dead_snakes(self, N, dead_idx, world, win):
-		fitnesses = np.array([i.fitness if i.is_dead == False else 100 for i in self.snakes])
-		indeces = list(np.argsort(fitnesses)[:N])
-		# append dead snake idx
-		for n in dead_idx:
-			indeces.append(n)
-		# prepare to pop
-		indeces = np.sort(indeces)[::-1]
-		debug.f_debug.write("indeces" + str(indeces) + "\n")
-
-		# remove weakest snake from population
-		for i in indeces:
-			#debug.f_debug.write("\tfitness " + str(self.snakes[i].fitness) + "\n")
-			self.snakes.pop(i)
-			#self.snakes[i].is_dead = True
-			#self.snakes[i].update(world, win)
-			
-			
-	def update(self, world, win):
-
+	def update(self, snake_world, win):
 		win.addstr(0, 1, ' ' + str(self.dead_count) + ' ')
-		win.addstr(world.max_y - 1, 1, ' ' + str(round(self.max_fitness, 2)) + ' ')
-		# detect which snakes have died during last iteration
-		dead_idx = []
+		win.addstr(snake_world.max_y - 1, 1, ' ' + str(round(self.max_fitness, 2)) + ' ')
 		for j,i in enumerate(self.snakes):
 			if i.is_dead == True:
 				self.dead_count += 1
-				dead_idx.append(j)
+				# create a new snake by choosing as parents the snakes with max fitness
+				# perform mutation + crossover when creating a new child
+				self.add_child(snake_world, win)
+				# remove at the end beacuse maybe the dead snake had best fitness (died on a wall..)
+				self.snakes.pop(j) # remove dead snake
+				# update max fitness
+				self.get_max_fitness()
 			
-			debug.f_debug.write("---------- SNAKE ID: " + str(j) + " / " + str(len(self.snakes) - 1) + " ------------\n")
+			debug.f_debug.write("---------- SNAKE ID: " + str(j + 1) + " / " + str(len(self.snakes)) + " ------------\n")
 			# update current snake
-			i.update(world, win)
+			i.update(snake_world, win)
 
-		dead_idx = np.sort(dead_idx)[::-1]
-		debug.f_debug.write("dead_idx" + str(dead_idx) + "\n")
-		# create new snakes
-		new_snakes = []
-		for s in dead_idx:
-			new_snakes.append(self.add_child(world, win))
-			self.snakes.pop(s)
-		# append new snakes to current generation
-		for s in new_snakes:
-			self.snakes.append(s)
-		
-		# update max fitness
-		self.get_max_fitness()
 
-	def crossover_mutation_bin(self, parent0, parent1, max_fitness, world, win):
+	def crossover_mutation_bin(self, parent0, parent1, max_fitness, snake_world, win):
 		debug.f_ANN.write('-------------------' + '\n')
 		p_mutation = 1 / max_fitness
 		# set upper limit to p_mutation
@@ -120,7 +91,7 @@ class SnakeGeneration:
 
 		debug.f_ANN.write('p_mutation: ' + str(p_mutation) + '\n')
 
-		win.addstr(world.max_y - 6, 0, ' ' + str(np.round(p_mutation, 2)) + ' ')
+		win.addstr(snake_world.max_y - 6, 0, ' ' + str(np.round(p_mutation, 2)) + ' ')
 		DNA_p0_bin = dec2bin(np.array(1e2 * parent0.DNA, dtype=int))
 		DNA_p1_bin = dec2bin(np.array(1e2 * parent1.DNA, dtype=int))
 		
@@ -146,7 +117,7 @@ class SnakeGeneration:
 
 		return newDNA
 
-	def crossover_mutation(self, parent0, parent1, max_fitness, world, win):
+	def crossover_mutation(self, parent0, parent1, max_fitness, snake_world, win):
 		debug.f_ANN.write('--------------------------------------' + '\n')
 	
 		p_mutation = 1 / max_fitness
@@ -154,15 +125,13 @@ class SnakeGeneration:
 		if p_mutation > 0.5:
 			p_mutation = 0.4
 
-		# random split dimension
-		split_dim = random.randint(2, 5)
 		debug.f_ANN.write('p_mutation: ' + str(p_mutation) + '\n')
-		debug.f_ANN.write('split_dim: ' + str(split_dim) + '\n')
 
 		#DNA_p0_bin = dec2bin(np.array(1e2 * parent0.DNA, dtype=int))
 		#DNA_p1_bin = dec2bin(np.array(1e2 * parent1.DNA, dtype=int))
 		debug.f_ANN.write('DNA0 ' + str(parent0.DNA) + '\n')
 		debug.f_ANN.write('DNA1 ' + str(parent1.DNA) + '\n')
+		split_dim = 3
 		#split0 = [parent0.DNA[x:x+split_dim] for x in range(0, len(parent0.DNA), split_dim)]
 		#split1 = [parent0.DNA[x:x+split_dim] for x in range(0, len(parent1.DNA), split_dim)]	
 		newDNA = np.zeros_like(parent0.DNA)
@@ -176,14 +145,13 @@ class SnakeGeneration:
 		
 		return newDNA
 
-	def add_child(self, world, win):
+	def add_child(self, snake_world, win):
 		'''
 		Select two parents and create a child by crossover + mutation procedure
 		'''
 		parent0, parent1, max_fitness = self.parents_selection()
-		newDNA = self.crossover_mutation(parent0, parent1, max_fitness, world, win)
-		
-		return snake.Snake(world, win, from_DNA=True, DNA=newDNA)
+		newDNA = self.crossover_mutation(parent0, parent1, max_fitness, snake_world, win)
+		self.snakes.append(snake.Snake(snake_world, win, from_DNA=True, DNA=newDNA))
 
 	def parents_selection(self):
 		'''
