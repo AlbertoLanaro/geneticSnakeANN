@@ -17,9 +17,7 @@ SCALE = field.Field.SCALE
 def main():
     #creo campo
     sn = snake.Snake()
-    field = pygame.display.set_mode((N * SCALE, N * SCALE))
-    
-    field.fill(WHITE)
+    fld = field.Field()
     clock = pygame.time.Clock()
     pygame.time.set_timer(1, 100)
     direction = 1
@@ -34,8 +32,8 @@ def main():
             elif e.button == 1:
                 print("sx")
                 direction = (direction+3) % 4
-        field.fill((255, 255, 255))
-        if sn.update(field, direction) == -1:
+        fld.update()
+        if sn.update(fld.field, direction) == -1:
             print("DEAD")
             return False
 

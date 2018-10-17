@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 '''
 Create the world with borders and food coordinates
 
@@ -72,7 +73,7 @@ class Snake:
         return self.food
 
     def getBodyPosition(self):
-        return self.body()
+        return self.body
 
 
     '''
@@ -94,20 +95,20 @@ class Snake:
         elif self.body[0][0] == -1 or self.body[0][0] == field.Field.N or (self.body[0][1] == -1) or self.body[0][1] == field.Field.N:
             if field.Field.BORDERS == True:
                 return -1
-            else: 
+            else:
                 # snake appears on the other side of the screen
                 if direction == 0:
-                    self.body.insert(0, [self.body[0][0], field.Field.N])
-                    self.body.pop()
-                if direction == 1: 
+                    self.body.pop(0)
+                    self.body.insert(0, [self.body[0][0], field.Field.N - 1])
+                if direction == 1:
+                    self.body.pop(0)
                     self.body.insert(0, [0 , self.body[0][1]])
-                    self.body.pop()
                 if direction == 2:
+                    self.body.pop(0)
                     self.body.insert(0, [self.body[0][0], 0])
-                    self.body.pop()
                 if direction == 3:
-                    self.body.insert(0, [field.Field.N, self.body[0][1]])
-                    self.body.pop()
+                    self.body.pop(0)
+                    self.body.insert(0, [field.Field.N - 1, self.body[0][1]])
 
         # check if snake head is in some food coordinates
         if self.body[0] == self.food:
