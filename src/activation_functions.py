@@ -10,6 +10,5 @@ def softmax(x):
 	return x_exp /np.sum(x_exp)
 
 def relu(x):
-	other_arry = np.zeros_like(x)
 
-	return np.maximum(x, other_arry)
+	return np.maximum(x, np.zeros_like(x))

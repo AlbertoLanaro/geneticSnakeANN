@@ -36,7 +36,7 @@ V  2
 '''
 
 import pygame
-from pygame.locals import *
+
 from random import randint
 import field
 import colors
@@ -91,7 +91,7 @@ class Snake:
         # check if snake hit borders
         if self.body[0] in self.body[1:]:
             return -1
-        if self.body[0][0] == -1 or self.body[0][0] == field.Field.N or (self.body[0][1] == -1) or self.body[0][1] == field.Field.N:
+        elif self.body[0][0] == -1 or self.body[0][0] == field.Field.N or (self.body[0][1] == -1) or self.body[0][1] == field.Field.N:
             if field.Field.BORDERS == True:
                 return -1
             else: 
