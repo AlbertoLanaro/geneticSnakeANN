@@ -4,8 +4,8 @@ Create the world with borders and food coordinates
 
 World coordinates system
 
->  1
 ^  0
+>  1
 V  2
 <  3
 
@@ -23,15 +23,16 @@ V  2
 
 
 
-(0, 0)----- X - ------->        ^
-  |           .                 |
-  |           .                 2
-  |						        UP
-  |           .      <-- LEFT --*-- RIGHT ->
-  | . . . . (y, x)              |
-  Y                           DOWN
-  |								0
-  |                             V
+(0, 0)----- X - ------->         ^
+  |           .                  |
+  |           .                  0
+  |			  .			         UP
+  |           .                  |
+  |           .      <-- 3 LEFT -*- RIGHT 1->
+  | . . . . (x, y)               |
+  Y                            DOWN
+  |								 2
+  |                              V
   v
 
 '''
@@ -69,6 +70,9 @@ class Snake:
                 return True
         return False
 
+    def getPrevDir(self):
+        return self.prev_dir
+
     def getFoodPosition(self):
         return self.food
 
@@ -83,7 +87,7 @@ class Snake:
     4)eventually delete the tail
     5)draw the snake and the food
     '''
-    def update(self, pygame_field, direction):
+    def update(self, fld, direction):
         self.timer += 1
         self.body.insert(0, [self.body[0][0] + (direction == 1 and 1) +
             (direction == 3 and -1), self.body[0][1] +
@@ -120,11 +124,11 @@ class Snake:
             # update snake's body
             last = self.body.pop()
             ret = 0
-        if pygame_field.gui:
-            self.show(pygame_field)
+        if fld.gui:
+            self.show(fld.field)
         return ret
 
-    def show(self, pygame_field):
+    def show(self, fld):
         for bit in self.body:
-            pygame_field.blit(self.cube, (bit[0] * field.Field.SCALE, bit[1] * field.Field.SCALE))
-        pygame_field.blit(self.cube, (self.food[0] * field.Field.SCALE, self.food[1] * field.Field.SCALE))
+            fld.blit(self.cube, (bit[0] * field.Field.SCALE, bit[1] * field.Field.SCALE))
+        fld.blit(self.cube, (self.food[0] * field.Field.SCALE, self.food[1] * field.Field.SCALE))

@@ -16,6 +16,3 @@ all_colors = [BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]
 def random():
     idx = randint(0, len(all_colors) - 1)
     return all_colors[idx]
-
-
-

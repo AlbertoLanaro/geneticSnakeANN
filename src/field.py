@@ -2,9 +2,9 @@ import pygame
 from colors import WHITE
 
 class Field:
-    SCALE = 40
+    SCALE = 20
     N = 10
-    BORDERS = False
+    BORDERS = True
     def __init__(self, gui=True):
         self.gui = gui
         if gui:

@@ -19,7 +19,7 @@ def main():
     sn = snake.Snake()
     fld = field.Field()
     clock = pygame.time.Clock()
-    pygame.time.set_timer(1, 100)
+    pygame.time.set_timer(1, 500)
     direction = 1
     while True:
         e = pygame.event.wait()
@@ -33,7 +33,7 @@ def main():
                 print("sx")
                 direction = (direction+3) % 4
         fld.update()
-        if sn.update(fld.field, direction) == -1:
+        if sn.update(fld, direction) == -1:
             print("DEAD")
             return False
 
