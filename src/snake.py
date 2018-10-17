@@ -120,7 +120,8 @@ class Snake:
             # update snake's body
             last = self.body.pop()
             ret = 0
-        self.show(pygame_field)
+        if pygame_field.gui:
+            self.show(pygame_field)
         return ret
 
     def show(self, pygame_field):
