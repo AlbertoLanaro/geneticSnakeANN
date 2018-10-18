@@ -64,13 +64,16 @@ class Simulation:
         for i in self.geneticSnakes:
             i.changeVisibility(False)
 
+    '''
+    Update geneticSnakes and field
+    '''
     def update(self):
-
-        # . . . 
-        # update entire screen -> pygame.display.update() could update portion of the screen
-        if self.field.gui:
+        if self.visible:
+            self.field.update()
+        for i in self.geneticSnakes:
+            i.update()
+            # update counter if a snake is dead
+            if i.is_dead:
+                self.death_counter += 1
+        if self.visible:
             pygame.display.flip()
-
-        
-        
-        
