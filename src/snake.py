@@ -55,6 +55,7 @@ class Snake:
         self.prev_dir = randint(0, 3)  # previous direction
         self.curr_dir = self.prev_dir # current direction
         self.is_dead = False # flag to indicate if the snake is dead
+        self.visible = False
         self.createFood()
 
     def createFood(self):
@@ -120,9 +121,12 @@ class Snake:
             # update snake's body
             last = self.body.pop()
             ret = 0
-        if pygame_field.gui:
+        if pygame_field.gui and self.visible:
             self.show(pygame_field.field)
         return ret
+
+    def visible(self, visible):
+        self.visible = visible
 
     def show(self, pygame_field):
         for bit in self.body:

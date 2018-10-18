@@ -6,15 +6,17 @@ import field
 import math
 
 class GeneticSnake:
-    def __init__(self, field, DNA = None): # TODO passa DNA a BRAIN
+    def __init__(self, field, DNA = None, reproduced = False, parent0 = None, parent0 = None): # TODO pass a DNA a BRAIN
         self.Nquad = field.Field.N ** 2
         self.field = field
         self.snake = snake.Snake()
         # brain input: N*N + prev_dir + head coord + angle
+        if reproduced:
+            self.brain = brain.Brain(field.Field.N ** 2 + 4, reproduced = True, parten0 = parent0, parent1 = parent1)
         if DNA = None:
             self.brain = brain.Brain(field.Field.N ** 2 + 4)
         else:
-            self.brain = brain.Brain(field.Field.N ** 2 + 4 , DNA)
+            self.brain = brain.Brain(field.Field.N ** 2 + 4 ,DNA = DNA)
         self.fitness = 0
         self.count = field.Field.N ** 2
         self.is_dead = False
@@ -94,8 +96,7 @@ class GeneticSnake:
         input.append(angle)
         return input
 
-    '''
-    It return the new DNA
-    '''
-    def repreoduce(self1, self2):
-        return newDNA = self1.brain.crossDNA(self2.brain)
+    def changeVisibility(self, visibility):
+        self.snake.visible(visibility)
+
+        
