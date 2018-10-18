@@ -3,28 +3,40 @@ import brain
 import fitness
 import field
 
+import math
+
 class GeneticSnake:
     def __init__(self, field): # TODO passa DNA a BRAIN
         self.field = field
         self.snake = snake.Snake()
-        self.brain = brain.Brain(field.Field.N ** 2)
+        # brain input: N*N + prev_dir + head coord + angle
+        self.brain = brain.Brain(field.Field.N ** 2 + 3)
         self.fitness = fitness.Fitness()
+        self.is_dead = False
     
     def update(self):
-        # get body + food + old direction 
-        curr_input = self.getCurrentInput()
-        # get new direction from brain 
-        # outputs:
-        #   0: go on
-        #   1: left
-        #   2: right
-        next_possible_dirs = self.getNextPossibleDir()
-        tmp_dir = self.brain.predictOutput(curr_input)
-        new_dir = next_possible_dirs[tmp_dir]
-        # update snake body
-        curr_reward = self.snake.update(self.field, new_dir)
-        # update fitness
-        self.fitness.update(curr_reward)
+        # update genetic snake only if alive
+        if not(self.is_dead):
+            # get body + food + old direction 
+            curr_input = self.getCurrentInput()
+            # get new direction from brain 
+            # outputs:
+            #   0: go on
+            #   1: left
+            #   2: right
+            next_possible_dirs = self.getNextPossibleDir()
+            tmp_dir = self.brain.predictOutput(curr_input)
+            # map output to possible snake directions
+            new_dir = next_possible_dirs[tmp_dir]
+            # update snake body
+            curr_reward = self.snake.update(self.field, new_dir)
+            # update fitness
+            self.fitness.update(curr_reward)
+            # check if snake is dead
+            if curr_reward == -1 or self.fitness < 1e-1:
+                #compute final fitness
+                self.fitness = self.fitness / self.snake.timer # TODO check: use [self.fitness] or [self.snake.score] ???
+                self.is_dead = True
 
     def getNextPossibleDir(self):
         prev_dir = self.snake.getPrevDir()
@@ -41,7 +53,9 @@ class GeneticSnake:
         # get info from snake
         snake_body = self.snake.getBodyPosition()
         food = self.snake.getFoodPosition()
-        norm_snake_head = [ snake_body[0][1] / field.Field.N , snake_body[0][1] / field.Field.N ]
+        snake_head = snake_body[0]
+        norm_snake_head = [ snake_head[0] / field.Field.N , snake_head[1] / field.Field.N ]
+        angle = math.atan2( (food[1] - snake_head[1]), (food[0] - snake_head[0]) ) # y / x [rad]
         prev_dir = self.snake.getPrevDir()
         input = []
         # map field's rewards
@@ -57,6 +71,7 @@ class GeneticSnake:
                     input.append(0)
         input.append(norm_snake_head)
         input.append(prev_dir)
+        input.append(angle)
 
         return input
 
