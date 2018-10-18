@@ -55,7 +55,6 @@ class Snake:
         self.score = 0 # inital score value
         self.prev_dir = randint(0, 3)  # previous direction
         self.curr_dir = self.prev_dir # current direction
-        self.is_dead = False # flag to indicate if the snake is dead
         self.createFood()
 
     def createFood(self):
@@ -96,7 +95,7 @@ class Snake:
         # check if snake hit borders
         if self.body[0] in self.body[1:]:
             return -1
-        elif self.body[0][0] == -1 or self.body[0][0] == field.Field.N or (self.body[0][1] == -1) or self.body[0][1] == field.Field.N:
+        elif self.body[0][0] == -1 or self.body[0][0] == field.Field.N or self.body[0][1] == -1 or self.body[0][1] == field.Field.N:
             if field.Field.BORDERS == True:
                 return -1
             else:
