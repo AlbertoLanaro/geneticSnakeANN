@@ -20,7 +20,7 @@ class Brain:
         else:
             # create brain from DNA
             self.DNA = DNA
-    
+
     def mutate(self, p_mutation=0.1):
         new_DNA = []
         for syn in self.DNA:
@@ -31,6 +31,11 @@ class Brain:
             new_DNA.append(syn)
         self.DNA = new_DNA
 
+    def repreoduce(self1, self2):
+        
+
+
+
     def predictOutput(self, input):
         l_tmp = sigmoid( np.dot(input, self.DNA[0] ) )
         for i in self.DNA[1:]:
@@ -38,6 +43,3 @@ class Brain:
         output = np.argmax(l_tmp)
 
         return output
-
-
-
