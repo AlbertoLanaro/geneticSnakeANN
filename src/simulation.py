@@ -2,13 +2,15 @@ import geneticSnake
 import field
 import colors
 import pygame
+import random
 
 TIMER = 100  #  [ms]
 class Simulation:
-    def __init__(self, n_snakes=5, visible=False):
+    def __init__(self, n_snakes=1000, visible=False):
         # field of the current generation
         self.field = field.Field()
         self.n_snakes = n_snakes
+        self.death_counter = 0
         self.visible = visible
         if self.field.gui:
             # set simulation update timer
@@ -16,16 +18,20 @@ class Simulation:
         # list of snake created for the current simulation
         self.geneticSnakes = [geneticSnake.GeneticSnake(self.field) for _ in range(n_snakes)]
 
+    '''
+    Simulation duration is set to "turn" iteration
+    '''
     def simulateGeneration(self, turn=100):
-        for i in range(turn):
-            if self.visible:
-                self.field.update()
-            for i in self.geneticSnakes:
-                i.update()
-            if self.visible:
-                pygame.display.flip()
-        #now it should be completed:
+        for _ in range(turn):
+            self.update()
 
+    '''
+    Simulation duration is triggered by the death of one or more snakes
+    '''
+    def simulateUntilDeath(self, n_death=1):
+        while self.death_counter < n_death:
+            self.update()
+            
     '''
     Sort the list of geneticSnake from higher to lower fitness
     '''
