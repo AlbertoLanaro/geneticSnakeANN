@@ -26,8 +26,11 @@ class Simulation:
                 pygame.display.flip()
         #now it should be completed:
 
+    '''
+    Sort the list of geneticSnake from higher to lower fitness
+    '''
     def sortSnakesForFitness(self):
-        # TODO sort -> geneticSnakes(key=fitness)
+        self.geneticSnakes.sort(key=lambda x: x.fitness, reverse=True)
 
     def reproduce(self):
         # sort for fitness
