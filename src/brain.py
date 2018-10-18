@@ -7,8 +7,11 @@ HIDDEN_UNITS = [6] # more hidden layers -> [6 10 10 ...]
 N_CLASS = 3
 
 class Brain:
-    def __init__(self, input_len, DNA=None):
-        if DNA == None:
+    def __init__(self, input_len, DNA = None, reproduced = False, parent0 = None, parent1 = None):
+        if reproduced:
+            self.DNA = self.crossDNA(parent0, parent1)
+            self.mutate(0.01)
+        elif DNA == None:
             # create random brain synapsis
             # first layer
             self.DNA = [ 2 * np.random.random(input_len * HIDDEN_UNITS[0]) - 1]
@@ -30,6 +33,18 @@ class Brain:
                     syn[neuron] = 2 * random.random() - 1
             new_DNA.append(syn)
         self.DNA = new_DNA
+
+    def crossDNA(self, parent0, parent1):
+        split_dim = random.randint(2, 5)
+        newDNA = np.zeros_like(parent0.DNA)
+        for i in range(0, len(newDNA), 2 * split_dim):
+			newDNA[i : i + split_dim] = parent0.DNA[i : i + split_dim]
+			newDNA[i + split_dim : i + 2 * split_dim] = parent1.DNA[i + split_dim : i + 2 * split_dim]
+        self.DNA = newDNA
+
+    def crossDNAAndMutate(self, parent0, parent1):
+        self.crossDNA(parent0, parent1)
+        self.mutate(0.05)
 
     def predictOutput(self, input):
         l_tmp = sigmoid( np.dot(input, self.DNA[0] ) )
