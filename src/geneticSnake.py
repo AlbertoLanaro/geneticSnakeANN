@@ -95,7 +95,7 @@ class GeneticSnake:
         return input
 
     '''
-    It return the new DNA 
+    It return the new DNA
     '''
     def repreoduce(self1, self2):
-        return newDNA = self1.brain.reproduce(self2)
+        return newDNA = self1.brain.crossDNA(self2.brain)

@@ -31,8 +31,9 @@ class Brain:
             new_DNA.append(syn)
         self.DNA = new_DNA
 
-    def repreoduce(self1, self2):
-        
+    def crossDNA(self1, self2):
+
+
 
 
 
