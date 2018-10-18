@@ -38,8 +38,8 @@ class Brain:
         split_dim = random.randint(2, 5)
         newDNA = np.zeros_like(parent0.DNA)
         for i in range(0, len(newDNA), 2 * split_dim):
-			newDNA[i : i + split_dim] = parent0.DNA[i : i + split_dim]
-			newDNA[i + split_dim : i + 2 * split_dim] = parent1.DNA[i + split_dim : i + 2 * split_dim]
+            newDNA[i : i + split_dim] = parent0.DNA[i : i + split_dim]
+            newDNA[i + split_dim : i + 2 * split_dim] = parent1.DNA[i + split_dim : i + 2 * split_dim]
         self.DNA = newDNA
 
     def crossDNAAndMutate(self, parent0, parent1):

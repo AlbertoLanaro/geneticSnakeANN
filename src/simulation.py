@@ -5,7 +5,7 @@ import pygame
 
 TIMER = 100  #  [ms]
 class Simulation:
-    def __init__(self, n_snakes=5, visible = False):
+    def __init__(self, n_snakes=5, visible=False):
         # field of the current generation
         self.field = field.Field()
         self.n_snakes = n_snakes
@@ -16,7 +16,7 @@ class Simulation:
         # list of snake created for the current simulation
         self.geneticSnakes = [geneticSnake.GeneticSnake(self.field) for _ in range(n_snakes)]
 
-    def simulateGeneration(self, turn = 100):
+    def simulateGeneration(self, turn=100):
         for i in range(turn):
             if self.visible:
                 self.field.update()
@@ -29,7 +29,7 @@ class Simulation:
     def sortSnakesForFitness(self):
         # TODO sort -> geneticSnakes(key=fitness)
 
-    self reproduce(self):
+    def reproduce(self):
         # sort for fitness
         self.sortSnakesForFitness()
         # Taking the first half and then reproduce them 
@@ -37,7 +37,7 @@ class Simulation:
             i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
                 0, self.n_snakes/2)].brain, self.geneticSnakes[random.randint(0, self.n_snakes/2)].brain)
 
-    self showBestN(self, N = 10): 
+    def showBestN(self, N=10): 
         self.field.gui = True
         self.visible = True
         self.sortSnakesForFitness()
@@ -47,7 +47,7 @@ class Simulation:
             i.changeVisibility(True)
         #i could create some pointer to the object that I will not longer show
 
-    def changebestN(self, N = 10)
+    def changebestN(self, N=10):
         self.sortSnakesForFitness()
         for i in self.geneticSnakes:
             i.changeVisibility(False)

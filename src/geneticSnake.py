@@ -68,7 +68,7 @@ class GeneticSnake:
 
 
     '''
-    Funtion that construct the net input as
+    Constructs ANN's input
     '''
     def getCurrentInput(self):
         # get info from snake
