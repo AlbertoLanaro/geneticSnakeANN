@@ -3,6 +3,7 @@ import field
 import colors
 import pygame
 import random
+import conf
 
 TIMER = 100  #  [ms]
 class Simulation:
@@ -46,13 +47,14 @@ class Simulation:
     def upgradeGeneration(self, N = 10 ):
         # sort for fitness
         self.sortSnakesForFitness()
-        topfitness = self.geneticSnakes[-1].fitness
+        #topfitness = self.geneticSnakes[-1].fitness
         # Taking the first half and then reproduce them 
         fit = 0
+        rnd = random.random()
         for i in self.geneticSnakes:
             fit += i.fitness
         for i in self.geneticSnakes[:self.n_snakes- N ]:
-            if fit < 800:
+            if rnd > conf.Conf.MUTATION_PROBABILITY:
                 i.brain.crossDNA(self.geneticSnakes[random.randint(
                 self.n_snakes-(N),self.n_snakes -1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(N),self.n_snakes -1)].brain)
             else:
@@ -62,7 +64,7 @@ class Simulation:
         for i in self.geneticSnakes[self.n_snakes-(N):]:
             i.clear()
             
-        return fit
+        return fit/self.n_snakes
 
     def showBestN(self, N=10): 
         self.field.view()
