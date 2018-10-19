@@ -27,10 +27,10 @@ class Brain:
     def mutate(self, p_mutation=0.1):
         new_DNA = []
         for syn in self.DNA:
-            for neuron in syn:
+            for s in range(len(syn)):
                 p = random.random()
                 if p < p_mutation:
-                    syn[neuron] = 2 * random.random() - 1
+                    syn[s] = 2 * random.random() - 1
             new_DNA.append(syn)
         self.DNA = new_DNA
 
@@ -47,10 +47,16 @@ class Brain:
         self.mutate(0.05)
 
     def predictOutput(self, input):
-        l_tmp = sigmoid( np.dot(input, self.DNA[0] ) )
-        for i in self.DNA[1:]:
-            l_tmp = sigmoid( np.dot(l_tmp, i) )
-        output = np.argmax(l_tmp)
+        # input layer
+        l_tmp = sigmoid( np.dot(input, self.DNA[0].reshape([len(input), HIDDEN_UNITS[0]])) )
+        # hidden layers
+        # self.DNA[1:-1]
+        for d in range(1, len(self.DNA) - 1):
+            l_tmp = sigmoid( np.dot(l_tmp, self.DNA[d].reshape(len(l_tmp), len(self.DNA[d]))) )
+        # prediction layer
+        pred = softmax( np.dot(l_tmp, self.DNA[-1].reshape(len(l_tmp), N_CLASS)) )
+        # prediction
+        output = np.argmax(pred)
 
         return output
 
