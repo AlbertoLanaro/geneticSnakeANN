@@ -36,7 +36,7 @@ class Simulation:
     Sort the list of geneticSnake from higher to lower fitness
     '''
     def sortSnakesForFitness(self):
-        self.geneticSnakes.sort(key=lambda x: x.fitness, reverse=True)
+        self.geneticSnakes.sort(key=lambda x: x.fitness)
 
     def reproduce(self):
         # sort for fitness
