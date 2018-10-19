@@ -31,7 +31,7 @@ class Simulation:
     def simulateUntilDeath(self, n_death=1):
         while self.death_counter < n_death:
             self.update()
-            
+
     '''
     Sort the list of geneticSnake from higher to lower fitness
     '''
@@ -42,7 +42,7 @@ class Simulation:
         # sort for fitness
         self.sortSnakesForFitness()
         # Taking the first half and then reproduce them 
-        for i in self.geneticSnakes[self.n_snakes/2:]:
+        for i in self.geneticSnakes[self.n_snakes//2:]:
             i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
                 0, self.n_snakes/2)].brain, self.geneticSnakes[random.randint(0, self.n_snakes/2)].brain)
 

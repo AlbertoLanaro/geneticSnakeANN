@@ -6,17 +6,17 @@ import field
 import math
 
 class GeneticSnake:
-    def __init__(self, field, DNA = None, reproduced = False, parent0 = None, parent0 = None): # TODO pass a DNA a BRAIN
+    def __init__(self, fld, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
         self.Nquad = field.Field.N ** 2
-        self.field = field
+        self.field = fld
         self.snake = snake.Snake()
         # brain input: N*N + curr_dir + head coord + angle
         if reproduced:
-            self.brain = brain.Brain(field.Field.N ** 2 + 4, reproduced = True, parten0 = parent0, parent1 = parent1)
-        if DNA = None:
+            self.brain = brain.Brain(field.Field.N ** 2 + 4, reproduced = True, parent0 = parent0, parent1 = parent1)
+        if DNA == None:
             self.brain = brain.Brain(field.Field.N ** 2 + 4)
         else:
-            self.brain = brain.Brain(field.Field.N ** 2 + 4 ,DNA = DNA)
+            self.brain = brain.Brain(field.Field.N ** 2 + 4, DNA = DNA)
         self.fitness = 0
         self.count = field.Field.N ** 2
         self.is_dead = False
@@ -38,21 +38,14 @@ class GeneticSnake:
             # update snake body
             curr_reward = self.snake.update(self.field, new_dir)
             # update fitness
-
             self.count -= 1
+            # snake hit walls/himself or no food found for self.count turns
             if curr_reward == -1 or self.count == 0:
                 self.is_dead = True
+            # snake found food
             elif curr_reward == 1:
                 self.fitness += curr_reward
                 self.count = self.Nquad
-            '''
-            self.fitness.update(curr_reward)
-            # check if snake is dead
-            if curr_reward == -1 or self.fitness < 1e-1:
-                #compute final fitness
-                self.fitness = self.fitness / self.snake.timer # TODO check: use [self.fitness] or [self.snake.score] ???
-                self.is_dead = True
-            '''
 
     def getNextPossibleDir(self):
         curr_dir = self.snake.getCurrDir()

@@ -51,7 +51,7 @@ class Snake:
         self.timer = 0
         self.size = 1
 		#define head start
-        self.body =  [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
+        self.body = [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
         self.score = 0 # inital score value
         self.curr_dir = randint(0, 3)  # previous direction
         self.is_dead = False # flag to indicate if the snake is dead
@@ -78,15 +78,15 @@ class Snake:
     def getBodyPosition(self):
         return self.body
 
-
     '''
     1)Update snake position knowed the direction
-    2)Check if it'dead -> return -1
+    2)Check if it's dead -> return -1
     3)Check if it ate some food -> return 1 and create new food
     4)eventually delete the tail
     5)draw the snake and the food
     '''
     def update(self, fld, direction):
+        self.curr_dir = direction
         self.timer += 1
         self.body.insert(0, [self.body[0][0] + (direction == 1 and 1) +
             (direction == 3 and -1), self.body[0][1] +
@@ -121,7 +121,7 @@ class Snake:
             ret = 1
         else:
             # update snake's body
-            last = self.body.pop()
+            _ = self.body.pop()
             ret = 0
         if fld.visible:
             self.show(fld.field)
