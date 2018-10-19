@@ -18,7 +18,7 @@ class GeneticSnake:
         else:
             self.brain = brain.Brain(field.Field.N ** 2 + 4, DNA = DNA)
         self.fitness = 0
-        self.count = field.Field.N ** 2
+        self.count = self.Nquad
         self.is_dead = False
 
     def update(self):
@@ -38,7 +38,7 @@ class GeneticSnake:
             # update snake body
             curr_reward = self.snake.update(self.field, new_dir)
             # update fitness
-            self.count -= 1
+            self.count = self.count - 1
             # snake hit walls/himself or no food found for self.count turns
             if curr_reward == -1 or self.count == 0:
                 self.is_dead = True
@@ -88,4 +88,9 @@ class GeneticSnake:
         input.append(angle)
 
         return input
+
+    def clear(self):
+        self.fitness = 0
+        self.count = self.Nquad
+        self.is_dead = False
         

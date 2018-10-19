@@ -21,11 +21,9 @@ class Simulation:
     Simulation duration is set to "turn" iteration
     '''
     def simulateGeneration(self, turn=100):
-        i = 0
         for _ in range(turn):
-            print(i)
             self.update()
-            i+=1
+            
 
     '''
     Simulation duration is triggered by the death of one or more snakes
@@ -43,18 +41,23 @@ class Simulation:
     # This function improves the natural selection
     # We take the second half of the simulation sorted by fitness
     # and change their DNA with the DNA of the better snakes
-    def upgradeGeneration(self):
+    def upgradeGeneration(self, N = 10 ):
         # sort for fitness
         self.sortSnakesForFitness()
+        topfitness = self.geneticSnakes[-1].fitness
         # Taking the first half and then reproduce them 
-        for i in self.geneticSnakes[self.n_snakes//2:]:
+        for i in self.geneticSnakes[0:self.n_snakes- N - 1]:
             i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
-                0, self.n_snakes//2)].brain, self.geneticSnakes[random.randint(0, self.n_snakes//2)].brain)
+                self.n_snakes-(N),self.n_snakes -1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(N),self.n_snakes -1)].brain)
+            i.clear()
+        for i in self.geneticSnakes[self.n_snakes-(N):]:
+            i.clear()
+        return topfitness
 
     def showBestN(self, N=10): 
         self.field.view()
         self.sortSnakesForFitness()
-        for i in self.geneticSnakes:
+        for i in self.geneticSnakes[:self.n_snakes - N]:
             i.snake.hide()
         for i in self.geneticSnakes[self.n_snakes - N :]:
             i.snake.view()
@@ -62,7 +65,7 @@ class Simulation:
 
     def updateBestN(self, N=10):
         self.sortSnakesForFitness()
-        for i in self.geneticSnakes:
+        for i in self.geneticSnakes[:self.n_snakes - N]:
             i.snake.hide()
         for i in self.geneticSnakes[self.n_snakes - N:]:
             i.snake.view()
