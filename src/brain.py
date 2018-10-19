@@ -9,7 +9,7 @@ N_CLASS = 3
 class Brain:
     def __init__(self, input_len, DNA = None, reproduced = False, parent0 = None, parent1 = None):
         if reproduced:
-            self.DNA = self.crossDNA(parent0, parent1)
+            self.crossDNA(parent0, parent1)
             self.mutate(0.01)
         elif DNA == None:
             # create random brain synapsis

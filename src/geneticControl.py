@@ -11,6 +11,7 @@ import simulation
 # a proposito: aggiungere dei dati da salvare tipo: numero generazioni
 # fitness media a generazione ecc
 #
+
 '''
 We should:
 1) Create all the snake that we want to simulate
@@ -18,12 +19,28 @@ We should:
 3) Create the new generation
 '''
 
+SNAKES_PER_SIMULATION = 1000
+N_SIMULATION = 1
+
 class GeneticControl:
-    def __init__(self, snakes_per_sim=100000, n_simulations=1, visible=False):
-        # create game simulations
-        self.simulations = [simulation.Simulation(snakes_per_sim, visible=visible) for _ in range(n_simulations)]
-        
+    def __init__(self, otherset=None, n_snakes=10, visible=False):
+        # create game simulations from zero
+        self.simulation = simulation.Simulation(n_snakes=n_snakes, visible=visible)
+        if not(otherset is None):
+            if otherset.simulation.n_snakes < n_snakes:
+                print("ERRORE; COPIO DA UN SET PICCOLO")
+                return 
+            otherset.simulation.sortSnakesForFitness()
+            for i in range(n_snakes):
+                self.simulation.geneticSnakes[i] = otherset.simulation.geneticSnakes[i]
+
+
+
     def start(self):
-        for simulation in self.simulations:
-            simulation.simulateGeneration(2000)
-            simulation.reproduce()
+        self.simulation.simulateGeneration(turn = 100)
+        print("Simulati un milione per 100 turni")
+        self.simulation.showBestN()
+        self.simulation.simulateGeneration(turn=100)
+        # I should use:
+        #1 simulations.simulateGeneration()
+        #2 simulations.reproduce()

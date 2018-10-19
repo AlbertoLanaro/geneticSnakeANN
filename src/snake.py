@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+
 '''
 Create the world with borders and food coordinates
 
@@ -38,18 +39,18 @@ V  2
 '''
 
 import pygame
-
 from random import randint
 import field
 import colors
 
 class Snake:
-    def __init__(self):
+    def __init__(self, visible = False):
         #graphics
         self.cube = pygame.Surface((field.Field.SCALE, field.Field.SCALE))
         self.cube.fill(colors.random())
         self.timer = 0
         self.size = 1
+        self.visible = visible
 		#define head start
         self.body = [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
         self.score = 0 # inital score value
@@ -123,7 +124,7 @@ class Snake:
             # update snake's body
             _ = self.body.pop()
             ret = 0
-        if fld.visible:
+        if fld.visible and self.visible:
             self.show(fld.field)
             
         return ret
@@ -132,3 +133,10 @@ class Snake:
         for bit in self.body:
             fld.blit(self.cube, (bit[0] * field.Field.SCALE, bit[1] * field.Field.SCALE))
         fld.blit(self.cube, (self.food[0] * field.Field.SCALE, self.food[1] * field.Field.SCALE))
+
+    #manage the snakes visibility
+    def view(self):
+        self.visible = True
+
+    def hide(self):
+        self.visible = False

@@ -6,10 +6,10 @@ import field
 import math
 
 class GeneticSnake:
-    def __init__(self, fld, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
+    def __init__(self, fld ,visible = False, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
         self.Nquad = field.Field.N ** 2
         self.field = fld
-        self.snake = snake.Snake()
+        self.snake = snake.Snake(visible = visible)
         # brain input: N*N + curr_dir + head coord + angle
         if reproduced:
             self.brain = brain.Brain(field.Field.N ** 2 + 4, reproduced = True, parent0 = parent0, parent1 = parent1)
