@@ -7,14 +7,14 @@ import random
 TIMER = 100  #  [ms]
 class Simulation:
     def __init__(self, n_snakes=1000, visible=False):
-        # field of the current generation
-        self.field = field.Field()
-        self.n_snakes = n_snakes
-        self.death_counter = 0
         self.visible = visible
-        if self.field.gui:
+        # field of the current generation
+        self.field = field.Field(visible)
+        if visible:
             # set simulation update timer
             pygame.time.set_timer(1, TIMER)
+        self.n_snakes = n_snakes
+        self.death_counter = 0
         # list of snake created for the current simulation
         self.geneticSnakes = [geneticSnake.GeneticSnake(self.field) for _ in range(n_snakes)]
 
@@ -47,7 +47,6 @@ class Simulation:
                 0, self.n_snakes/2)].brain, self.geneticSnakes[random.randint(0, self.n_snakes/2)].brain)
 
     def showBestN(self, N=10): 
-        self.field.gui = True
         self.visible = True
         self.sortSnakesForFitness()
         for i in self.geneticSnakes:
@@ -63,10 +62,8 @@ class Simulation:
         for i in self.geneticSnakes[self.n_snakes - N:]:
             i.changeVisibility(True)
 
-
     def stopShowing(self):
         self.visible = False
-        self.field.gui = False
         for i in self.geneticSnakes:
             i.changeVisibility(False)
 
@@ -74,8 +71,7 @@ class Simulation:
     Update geneticSnakes and field
     '''
     def update(self):
-        if self.visible:
-            self.field.update()
+        self.field.update()
         for i in self.geneticSnakes:
             i.update()
             # update counter if a snake is dead

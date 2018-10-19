@@ -93,8 +93,6 @@ class GeneticSnake:
         input.append(norm_snake_head[1])
         input.append(curr_dir)
         input.append(angle)
-        return input
 
-    def changeVisibility(self, visibility):
-        self.snake.visible(visibility)
+        return input
         

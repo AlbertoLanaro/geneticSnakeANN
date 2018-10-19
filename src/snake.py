@@ -55,7 +55,6 @@ class Snake:
         self.score = 0 # inital score value
         self.curr_dir = randint(0, 3)  # previous direction
         self.is_dead = False # flag to indicate if the snake is dead
-        self.visible = False
         self.createFood()
 
     def createFood(self):
@@ -124,12 +123,10 @@ class Snake:
             # update snake's body
             last = self.body.pop()
             ret = 0
-        if fld.gui:
+        if fld.visible:
             self.show(fld.field)
+            
         return ret
-
-    def visible(self, visible):
-        self.visible = visible
 
     def show(self, fld):
         for bit in self.body:
