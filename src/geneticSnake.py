@@ -6,7 +6,7 @@ import field
 import math
 
 class GeneticSnake:
-    def __init__(self, fld ,visible = False, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
+    def __init__(self, fld, visible = False, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
         self.Nquad = field.Field.N ** 2
         self.field = fld
         self.snake = snake.Snake(visible = visible)
@@ -90,7 +90,8 @@ class GeneticSnake:
         return input
 
     def clear(self):
+        visible = self.snake.visible
+        self.snake.__init__(visible)
         self.fitness = 0
         self.count = self.Nquad
         self.is_dead = False
-        
