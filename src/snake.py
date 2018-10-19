@@ -53,8 +53,7 @@ class Snake:
 		#define head start
         self.body =  [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
         self.score = 0 # inital score value
-        self.prev_dir = randint(0, 3)  # previous direction
-        self.curr_dir = self.prev_dir # current direction
+        self.curr_dir = randint(0, 3)  # previous direction
         self.is_dead = False # flag to indicate if the snake is dead
         self.visible = False
         self.createFood()
@@ -71,8 +70,8 @@ class Snake:
                 return True
         return False
 
-    def getPrevDir(self):
-        return self.prev_dir
+    def getCurrDir(self):
+        return self.curr_dir
 
     def getFoodPosition(self):
         return self.food

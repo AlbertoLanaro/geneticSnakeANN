@@ -10,7 +10,7 @@ class GeneticSnake:
         self.Nquad = field.Field.N ** 2
         self.field = field
         self.snake = snake.Snake()
-        # brain input: N*N + prev_dir + head coord + angle
+        # brain input: N*N + curr_dir + head coord + angle
         if reproduced:
             self.brain = brain.Brain(field.Field.N ** 2 + 4, reproduced = True, parten0 = parent0, parent1 = parent1)
         if DNA = None:
@@ -26,13 +26,12 @@ class GeneticSnake:
         if not(self.is_dead):
             # get body + food + old direction
             curr_input = self.getCurrentInput()
+            next_possible_dirs = self.getNextPossibleDir()
             # get new direction from brain
             # outputs:
             #   0: go on
             #   1: left
             #   2: right
-
-            next_possible_dirs = self.getNextPossibleDir()
             tmp_dir = self.brain.predictOutput(curr_input)
             # map output to possible snake directions
             new_dir = next_possible_dirs[tmp_dir]
@@ -56,13 +55,13 @@ class GeneticSnake:
             '''
 
     def getNextPossibleDir(self):
-        prev_dir = self.snake.getPrevDir()
+        curr_dir = self.snake.getCurrDir()
         # left
-        rel_left = (prev_dir - 1) % 4
+        rel_left = (curr_dir - 1) % 4
         # go on
-        rel_go_on = prev_dir
+        rel_go_on = curr_dir
         # right
-        rel_right = (prev_dir + 1) % 4
+        rel_right = (curr_dir + 1) % 4
 
         return [rel_left, rel_go_on, rel_right]
 
@@ -77,7 +76,7 @@ class GeneticSnake:
         snake_head = snake_body[0]
         norm_snake_head = [ snake_head[0] / field.Field.N , snake_head[1] / field.Field.N ]
         angle = math.atan2( (food[1] - snake_head[1]), (food[0] - snake_head[0]) ) # y / x [rad]
-        prev_dir = (self.snake.getPrevDir()%4) - 1
+        curr_dir = (self.snake.getCurrDir() % 4) - 1
         input = []
         # map field's rewards
         for i in range(field.Field.N):
@@ -92,7 +91,7 @@ class GeneticSnake:
                     input.append(0)
         input.append(norm_snake_head[0])
         input.append(norm_snake_head[1])
-        input.append(prev_dir)
+        input.append(curr_dir)
         input.append(angle)
         return input
 
