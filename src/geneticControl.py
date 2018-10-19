@@ -18,16 +18,12 @@ We should:
 3) Create the new generation
 '''
 
-SNAKES_PER_SIMULATION = 100000
-N_SIMULATION = 1
-
-class GenticControl:
-    def __init__(self):
+class GeneticControl:
+    def __init__(self, snakes_per_sim=100000, n_simulations=1, visible=False):
         # create game simulations
-        self.simulations = [simulation.Simulation(SNAKES_PER_SIMULATION) for _ in range(N_SIMULATION)]
+        self.simulations = [simulation.Simulation(snakes_per_sim, visible=visible) for _ in range(n_simulations)]
         
     def start(self):
-        # I should use:
-        #1 simulations.simulateGeneration()
-        #2 simulations.reproduce()
-        #
+        for simulation in self.simulations:
+            simulation.simulateGeneration(2000)
+            simulation.reproduce()
