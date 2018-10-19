@@ -47,12 +47,12 @@ class Simulation:
         # sort for fitness
         self.sortSnakesForFitness()
         topfitness = self.geneticSnakes[-1].fitness
-        # Taking the first half and then reproduce them 
-        for i in self.geneticSnakes[:self.n_snakes- N - 1]:
+        # Taking the best snakes and reproduce them
+        for i in self.geneticSnakes[:self.n_snakes-N]:
             i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
-                self.n_snakes-(N),self.n_snakes -1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(N),self.n_snakes -1)].brain)
+                self.n_snakes-N, self.n_snakes-1)].brain, self.geneticSnakes[random.randint(self.n_snakes-N,self.n_snakes-1)].brain)
             i.clear()
-        for i in self.geneticSnakes[self.n_snakes-(N):]:
+        for i in self.geneticSnakes[self.n_snakes-N:]:
             i.clear()
         return topfitness
 

@@ -91,7 +91,8 @@ class GeneticSnake:
 
     def clear(self):
         visible = self.snake.visible
-        self.snake.__init__(visible)
+        color = self.snake.color
+        self.snake.__init__(visible=visible, color=color)
         self.fitness = 0
         self.count = self.Nquad
         self.is_dead = False

@@ -44,10 +44,14 @@ import field
 import colors
 
 class Snake:
-    def __init__(self, visible = False):
+    def __init__(self, visible = False, color = None):
         #graphics
         self.cube = pygame.Surface((field.Field.SCALE, field.Field.SCALE))
-        self.cube.fill(colors.random())
+        if color is not None:
+            self.color = color
+        else:
+            self.color = colors.random()
+        self.cube.fill(self.color)
         self.timer = 0
         self.size = 1
         self.visible = visible
