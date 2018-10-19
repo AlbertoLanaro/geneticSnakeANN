@@ -13,4 +13,5 @@ class Field:
 
     def update(self):
         if self.visible:
+            _ = pygame.event.wait()
             self.field.fill(WHITE)
