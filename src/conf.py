@@ -1,0 +1,8 @@
+class Conf():
+    HIDDEN_LAYER_NEURONS = 6
+    N_SNAKE = 10000
+    N_DEATH = 5000
+    N_CROSS = 100
+    MUTATION_RATE = 0
+    ITERATION = 50
+

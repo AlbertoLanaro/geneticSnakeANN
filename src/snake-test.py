@@ -1,11 +1,20 @@
 import geneticControl
+import matplotlib.pyplot as plt
+import numpy as np
+import conf
+ 
+
 
 if __name__ == "__main__":
     fitness = []
-    geneticSnakeGame = geneticControl.GeneticControl(n_snakes=15, visible=True)
-    for i in range(200):
+    plt.figure(figsize=(10, 10))
+    geneticSnakeGame = geneticControl.GeneticControl(n_snakes=conf.Conf.N_SNAKE)
+    for i in range(conf.Conf.ITERATION):
         print("generazione "+str(i))
-        geneticSnakeGame.simulation.simulateUntilDeath(n_death=10) #simulateGeneration(turn=50)
-        fitmoment = geneticSnakeGame.simulation.upgradeGeneration(N=10)
-        print(fitmoment)
-        fitness.append(fitmoment)
+        geneticSnakeGame.simulation.simulateUntilDeath(n_death=conf.Conf.N_DEATH) #simulateGeneration(turn=50)
+        fitmedia = geneticSnakeGame.simulation.upgradeGeneration(N=conf.Conf.N_CROSS)
+        print(fitmedia)
+        fitness.append(fitmedia)
+    plt.plot(np.array(fitness), c="pink")
+    plt.show()
+    
