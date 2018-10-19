@@ -4,8 +4,8 @@ Create the world with borders and food coordinates
 
 World coordinates system
 
->  1
 ^  0
+>  1
 V  2
 <  3
 
@@ -23,15 +23,16 @@ V  2
 
 
 
-(0, 0)----- X - ------->        ^
-  |           .                 |
-  |           .                 2
-  |						        UP
-  |           .      <-- LEFT --*-- RIGHT ->
-  | . . . . (y, x)              |
-  Y                           DOWN
-  |								0
-  |                             V
+(0, 0)----- X - ------->         ^
+  |           .                  |
+  |           .                  0
+  |			  .			         UP
+  |           .                  |
+  |           .      <-- 3 LEFT -*- RIGHT 1->
+  | . . . . (x, y)               |
+  Y                            DOWN
+  |								 2
+  |                              V
   v
 
 '''
@@ -50,12 +51,10 @@ class Snake:
         self.timer = 0
         self.size = 1
 		#define head start
-        self.body =  [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
+        self.body = [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
         self.score = 0 # inital score value
-        self.prev_dir = randint(0, 3)  # previous direction
-        self.curr_dir = self.prev_dir # current direction
+        self.curr_dir = randint(0, 3)  # previous direction
         self.is_dead = False # flag to indicate if the snake is dead
-        self.visible = False
         self.createFood()
 
     def createFood(self):
@@ -70,21 +69,24 @@ class Snake:
                 return True
         return False
 
+    def getCurrDir(self):
+        return self.curr_dir
+
     def getFoodPosition(self):
         return self.food
 
     def getBodyPosition(self):
         return self.body
 
-
     '''
     1)Update snake position knowed the direction
-    2)Check if it'dead -> return -1
+    2)Check if it's dead -> return -1
     3)Check if it ate some food -> return 1 and create new food
     4)eventually delete the tail
     5)draw the snake and the food
     '''
-    def update(self, pygame_field, direction):
+    def update(self, fld, direction):
+        self.curr_dir = direction
         self.timer += 1
         self.body.insert(0, [self.body[0][0] + (direction == 1 and 1) +
             (direction == 3 and -1), self.body[0][1] +
@@ -93,7 +95,7 @@ class Snake:
         # check if snake hit borders
         if self.body[0] in self.body[1:]:
             return -1
-        elif self.body[0][0] == -1 or self.body[0][0] == field.Field.N or (self.body[0][1] == -1) or self.body[0][1] == field.Field.N:
+        elif self.body[0][0] == -1 or self.body[0][0] == field.Field.N or self.body[0][1] == -1 or self.body[0][1] == field.Field.N:
             if field.Field.BORDERS == True:
                 return -1
             else:
@@ -119,16 +121,14 @@ class Snake:
             ret = 1
         else:
             # update snake's body
-            last = self.body.pop()
+            _ = self.body.pop()
             ret = 0
-        if pygame_field.gui and self.visible:
-            self.show(pygame_field.field)
+        if fld.visible:
+            self.show(fld.field)
+            
         return ret
 
-    def visible(self, visible):
-        self.visible = visible
-
-    def show(self, pygame_field):
+    def show(self, fld):
         for bit in self.body:
-            pygame_field.blit(self.cube, (bit[0] * field.Field.SCALE, bit[1] * field.Field.SCALE))
-        pygame_field.blit(self.cube, (self.food[0] * field.Field.SCALE, self.food[1] * field.Field.SCALE))
+            fld.blit(self.cube, (bit[0] * field.Field.SCALE, bit[1] * field.Field.SCALE))
+        fld.blit(self.cube, (self.food[0] * field.Field.SCALE, self.food[1] * field.Field.SCALE))
