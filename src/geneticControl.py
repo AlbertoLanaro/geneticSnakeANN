@@ -19,9 +19,6 @@ We should:
 3) Create the new generation
 '''
 
-SNAKES_PER_SIMULATION = 1000
-N_SIMULATION = 1
-
 class GeneticControl:
     def __init__(self, otherset=None, n_snakes=10, visible=False):
         # create game simulations from zero

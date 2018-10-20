@@ -1,16 +1,19 @@
 import random
 import numpy as np
 from activation_functions import sigmoid, softmax, relu
+import conf 
 
 # brain parameters
-HIDDEN_UNITS = [6] # more hidden layers -> [6 10 10 ...]
+HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
 N_CLASS = 3
+p_mutation = conf.MUTATION_RATE
+
 
 class Brain:
     def __init__(self, input_len, DNA = None, reproduced = False, parent0 = None, parent1 = None):
         if reproduced:
             self.crossDNA(parent0, parent1)
-            self.mutate(0.01)
+            self.mutate()
         elif DNA == None:
             # create random brain synapsis
             # first layer
@@ -24,7 +27,7 @@ class Brain:
             # create brain from DNA
             self.DNA = DNA
     
-    def mutate(self, p_mutation=0.1):
+    def mutate(self):
         new_DNA = []
         for syn in self.DNA:
             for s in range(len(syn)):
@@ -44,7 +47,7 @@ class Brain:
 
     def crossDNAAndMutate(self, parent0, parent1):
         self.crossDNA(parent0, parent1)
-        self.mutate(0.05)
+        self.mutate()
 
     def predictOutput(self, input):
         # input layer

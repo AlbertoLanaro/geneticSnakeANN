@@ -3,8 +3,9 @@ import field
 import colors
 import pygame
 import random
+import conf
 
-TIMER = 100  #  [ms]
+TIMER = 1  #  [ms]
 class Simulation:
     def __init__(self, n_snakes=1000, visible=False):
         # field of the current generation
@@ -46,15 +47,26 @@ class Simulation:
     def upgradeGeneration(self, N = 10 ):
         # sort for fitness
         self.sortSnakesForFitness()
-        topfitness = self.geneticSnakes[-1].fitness
-        # Taking the best snakes and reproduce them
-        for i in self.geneticSnakes[:self.n_snakes-N]:
-            i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
-                self.n_snakes-N, self.n_snakes-1)].brain, self.geneticSnakes[random.randint(self.n_snakes-N,self.n_snakes-1)].brain)
+        max_fit = self.geneticSnakes[-1].fitness
+        min_fit = self.geneticSnakes[0].fitness
+        #topfitness = self.geneticSnakes[-1].fitness
+        # Taking the first half and then reproduce them 
+        fit = 0
+        rnd = random.random()
+        for i in self.geneticSnakes:
+            fit += i.fitness
+        for i in self.geneticSnakes[:self.n_snakes- N ]:
+            if rnd > conf.MUTATION_PROBABILITY:
+                i.brain.crossDNA(self.geneticSnakes[random.randint(
+                self.n_snakes-(N),self.n_snakes -1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(N),self.n_snakes -1)].brain)
+            else:
+                i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
+                    self.n_snakes-(N), self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(N), self.n_snakes - 1)].brain)
             i.clear()
         for i in self.geneticSnakes[self.n_snakes-N:]:
             i.clear()
-        return topfitness
+            
+        return fit/self.n_snakes, max_fit, min_fit
 
     def showBestN(self, N=10): 
         self.field.view()
