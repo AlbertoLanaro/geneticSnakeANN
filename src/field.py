@@ -2,8 +2,8 @@ import pygame
 from colors import WHITE
 
 class Field:
-    SCALE = 20
-    N = 10
+    SCALE = 30
+    N = 8
     BORDERS = True
     def __init__(self, visible=False):
         self.visible = visible

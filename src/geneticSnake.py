@@ -2,16 +2,21 @@ import snake
 import brain
 import fitness
 import field
-
+import conf
 import math
 
 class GeneticSnake:
     def __init__(self, fld, visible = False, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
-        self.Nquad = field.Field.N ** 2
+        self.Nquad = conf.MAX_LIFE_WITHOUT_FOOD
         self.field = fld
+        self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
         self.snake = snake.Snake(visible = visible)
         # brain input: N*N + curr_dir + head coord + angle
-        input_size = 4 # field.Field.N ** 2 + 4
+        if conf.FIELD_AS_IMPUT:
+            fieldarea = conf.BORDER **2
+        else:
+            fieldarea = 0
+        input_size = 4 + fieldarea # field.Field.N ** 2 + 4
         if reproduced:
             self.brain = brain.Brain(input_size, reproduced = True, parent0 = parent0, parent1 = parent1)
         if DNA == None:
@@ -41,7 +46,8 @@ class GeneticSnake:
             # update fitness
             self.count = self.count - 1
             # snake hit walls/himself or no food found for self.count turns
-            if curr_reward == -1 or self.count == 0:
+            if curr_reward == -1 or self.count == 0 or (curr_reward != 1 and self.loop()):
+                #self.fitness -=  2
                 self.is_dead = True
             # snake found food
             elif curr_reward == 1:
@@ -73,16 +79,17 @@ class GeneticSnake:
         curr_dir = (self.snake.getCurrDir() % 4) - 1
         input = []
         # # map field's rewards
-        # for i in range(field.Field.N):
-        #     for j in range(self.field.N):
-        #         if [i,j] == food:
-        #             input.append(1)
-        #         elif [i,j] in snake_body:
-        #             input.append(-1)
-        #         elif [i,j] == -1 or [i,j] == field.Field.N:
-        #             input.append(-2)
-        #         else:
-        #             input.append(0)
+        if conf.FIELD_AS_IMPUT:
+            for i in range(field.Field.N):
+                for j in range(self.field.N):
+                    if [i,j] == food:
+                        input.append(1)
+                    elif [i,j] in snake_body:
+                        input.append(-1)
+                    elif [i,j] == -1 or [i,j] == field.Field.N:
+                        input.append(-2)
+                    else:
+                        input.append(0)
         input.append(norm_snake_head[0])
         input.append(norm_snake_head[1])
         input.append(curr_dir)
@@ -97,3 +104,14 @@ class GeneticSnake:
         self.fitness = 0
         self.count = self.Nquad
         self.is_dead = False
+
+    def loop(self):
+        head = self.snake.getBodyPosition()[0]
+        if head == self.exposition[0]:
+            #self.fitness -= 1
+            return True
+        else:
+            self.exposition[:] = self.exposition[1:]
+            self.exposition.append(head)
+            return False
+

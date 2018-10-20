@@ -5,11 +5,13 @@ import pygame
 import random
 import conf
 
+N = conf.N_CROSS
 TIMER = 1  #  [ms]
 class Simulation:
     def __init__(self, n_snakes=1000, visible=False):
         # field of the current generation
         self.field = field.Field(visible)
+        self.iteration = 0
         if visible:
             # set simulation update timer
             pygame.time.set_timer(1, TIMER)
@@ -21,8 +23,10 @@ class Simulation:
     '''
     Simulation duration is set to "turn" iteration
     '''
-    def simulateGeneration(self, turn=100):
+    def simulateGeneration(self, turn=50):
+        self.iteration = 0
         for _ in range(turn):
+            self.iteration += 1
             self.update()
             
 
@@ -30,10 +34,24 @@ class Simulation:
     Simulation duration is triggered by the death of one or more snakes
     '''
     def simulateUntilDeath(self, n_death=1):
+        self.iteration = 0
         while self.death_counter < n_death:
+            self.iteration += 1
             self.update()
             #print("dead snake: ", self.death_counter)
             
+        self.death_counter = 0
+    '''
+    Simulation duration is triggered by the death of one or more snakes
+    or timer ending
+    '''
+    def simulateUntilDeathOrTimer(self, n_death=1, N = 100):
+        self.iteration = 0
+        while self.death_counter < n_death and self.iteration < N :
+            self.update()
+            self.iteration+=1
+            #print("dead snake: ", self.death_counter)
+
         self.death_counter = 0
     '''
     Sort the list of geneticSnake from higher to lower fitness
@@ -44,7 +62,7 @@ class Simulation:
     # This function improves the natural selection
     # We take the second half of the simulation sorted by fitness
     # and change their DNA with the DNA of the better snakes
-    def upgradeGeneration(self, N = 10 ):
+    def upgradeGeneration(self ):
         # sort for fitness
         self.sortSnakesForFitness()
         max_fit = self.geneticSnakes[-1].fitness
@@ -52,21 +70,23 @@ class Simulation:
         #topfitness = self.geneticSnakes[-1].fitness
         # Taking the first half and then reproduce them 
         fit = 0
-        rnd = random.random()
-        for i in self.geneticSnakes:
+        fit_top = 0 
+        for i in self.geneticSnakes[:self.n_snakes - (conf.N_SNAKE_SURVIVING + 1)]:
             fit += i.fitness
-        for i in self.geneticSnakes[:self.n_snakes- N ]:
+            rnd = random.random()
             if rnd > conf.MUTATION_PROBABILITY:
                 i.brain.crossDNA(self.geneticSnakes[random.randint(
-                self.n_snakes-(N),self.n_snakes -1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(N),self.n_snakes -1)].brain)
+                    self.n_snakes-(conf.N_CROSS), self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(conf.N_CROSS), self.n_snakes - 1)].brain)
             else:
                 i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
-                    self.n_snakes-(N), self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(N), self.n_snakes - 1)].brain)
+                    self.n_snakes-(conf.N_CROSS), self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(conf.N_CROSS), self.n_snakes - 1)].brain)
             i.clear()
-        for i in self.geneticSnakes[self.n_snakes-N:]:
+        for i in self.geneticSnakes[self.n_snakes - self.n_snakes-conf.N_SNAKE_SURVIVING : self.n_snakes-conf.N_CROSS -1]:
+            fit += i.fitness
+        for i in self.geneticSnakes[self.n_snakes-conf.N_CROSS:]:
+            fit_top += i.fitness
             i.clear()
-            
-        return fit/self.n_snakes, max_fit, min_fit
+        return (fit + fit_top)/self.n_snakes, (fit_top/N), max_fit, min_fit, self.iteration
 
     def showBestN(self, N=10): 
         self.field.view()
@@ -94,6 +114,7 @@ class Simulation:
     '''
     def update(self):
         self.field.update()
+        self.death_counter = 0
         for i in self.geneticSnakes:
             i.update()
             # update counter if a snake is dead

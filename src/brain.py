@@ -33,7 +33,8 @@ class Brain:
             for s in range(len(syn)):
                 p = random.random()
                 if p < p_mutation:
-                    syn[s] = 2 * random.random() - 1
+                    app = syn[s]
+                    syn[s] =  app + conf.EPSILON*(2*random.random() -1)
             new_DNA.append(syn)
         self.DNA = new_DNA
 
