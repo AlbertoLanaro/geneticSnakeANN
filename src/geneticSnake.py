@@ -11,12 +11,13 @@ class GeneticSnake:
         self.field = fld
         self.snake = snake.Snake(visible = visible)
         # brain input: N*N + curr_dir + head coord + angle
+        input_size = 4 # field.Field.N ** 2 + 4
         if reproduced:
-            self.brain = brain.Brain(field.Field.N ** 2 + 4, reproduced = True, parent0 = parent0, parent1 = parent1)
+            self.brain = brain.Brain(input_size, reproduced = True, parent0 = parent0, parent1 = parent1)
         if DNA == None:
-            self.brain = brain.Brain(field.Field.N ** 2 + 4)
+            self.brain = brain.Brain(input_size)
         else:
-            self.brain = brain.Brain(field.Field.N ** 2 + 4, DNA = DNA)
+            self.brain = brain.Brain(input_size, DNA = DNA)
         self.fitness = 0
         self.count = self.Nquad
         self.is_dead = False
@@ -71,17 +72,17 @@ class GeneticSnake:
         angle = math.atan2( (food[1] - snake_head[1]), (food[0] - snake_head[0]) ) # y / x [rad]
         curr_dir = (self.snake.getCurrDir() % 4) - 1
         input = []
-        # map field's rewards
-        for i in range(field.Field.N):
-            for j in range(self.field.N):
-                if [i,j] == food:
-                    input.append(1)
-                elif [i,j] in snake_body:
-                    input.append(-1)
-                elif [i,j] == -1 or [i,j] == field.Field.N:
-                    input.append(-2)
-                else:
-                    input.append(0)
+        # # map field's rewards
+        # for i in range(field.Field.N):
+        #     for j in range(self.field.N):
+        #         if [i,j] == food:
+        #             input.append(1)
+        #         elif [i,j] in snake_body:
+        #             input.append(-1)
+        #         elif [i,j] == -1 or [i,j] == field.Field.N:
+        #             input.append(-2)
+        #         else:
+        #             input.append(0)
         input.append(norm_snake_head[0])
         input.append(norm_snake_head[1])
         input.append(curr_dir)
@@ -91,7 +92,8 @@ class GeneticSnake:
 
     def clear(self):
         visible = self.snake.visible
-        self.snake.__init__(visible)
+        color = self.snake.color
+        self.snake.__init__(visible=visible, color=color)
         self.fitness = 0
         self.count = self.Nquad
         self.is_dead = False

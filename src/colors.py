@@ -14,5 +14,8 @@ all_colors = [BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]
 
 # return a random color
 def random():
-    idx = randint(0, len(all_colors) - 1)
-    return all_colors[idx]
+    # avoid to bright colors
+    max_bright = 240
+    c = [randint(0,max_bright), randint(0,max_bright), randint(0,max_bright)]
+    
+    return c
