@@ -26,7 +26,6 @@ class Simulation:
     def simulateGeneration(self, turn=50):
         self.iteration = 0
         for _ in range(turn):
-            self.iteration += 1
             self.update()
             
 
@@ -36,7 +35,6 @@ class Simulation:
     def simulateUntilDeath(self, n_death=1):
         self.iteration = 0
         while self.death_counter < n_death:
-            self.iteration += 1
             self.update()
             #print("dead snake: ", self.death_counter)
             
@@ -118,6 +116,7 @@ class Simulation:
     def update(self):
         self.field.update()
         self.death_counter = 0
+        self.iteration += 1
         for i in self.geneticSnakes:
             i.update()
             # update counter if a snake is dead
