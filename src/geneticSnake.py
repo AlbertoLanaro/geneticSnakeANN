@@ -7,12 +7,12 @@ import math
 
 class GeneticSnake:
     def __init__(self, fld, visible = False, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
-        self.Nquad = conf.MAX_LIFE_WITHOUT_FOOD
         self.field = fld
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
+        self.curr_reward = None
         self.snake = snake.Snake(visible = visible)
         # brain input: N*N + curr_dir + head coord + angle
-        if conf.FIELD_AS_IMPUT:
+        if conf.FIELD_AS_INPUT:
             fieldarea = conf.BORDER **2
         else:
             fieldarea = 4
@@ -24,7 +24,7 @@ class GeneticSnake:
         else:
             self.brain = brain.Brain(input_size, DNA = DNA)
         self.fitness = 0
-        self.count = self.Nquad
+        self.count = conf.MAX_LIFE_WITHOUT_FOOD
         self.is_dead = False
 
     def update(self):
@@ -42,18 +42,18 @@ class GeneticSnake:
             # map output to possible snake directions
             new_dir = next_possible_dirs[tmp_dir]
             # update snake body
-            curr_reward = self.snake.update(self.field, new_dir)
+            self.curr_reward = self.snake.update(self.field, new_dir)
             # update fitness
             self.count = self.count - 1
             # snake hit walls/himself or no food found for self.count turns
-            if curr_reward == -1 or self.count == 0 or (curr_reward != 1 and self.loop()):
+            if self.curr_reward == -1 or self.count == 0 or (self.curr_reward != 1 and self.loop()):
                 #self.fitness -=  2
                 self.is_dead = True
             # snake found food
-            elif curr_reward == 1:
+            elif self.curr_reward == 1:
                 self.expositionn = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
-                self.fitness += curr_reward
-                self.count = self.Nquad
+                self.fitness += self.curr_reward
+                self.count = conf.MAX_LIFE_WITHOUT_FOOD
 
     def getNextPossibleDir(self):
         curr_dir = self.snake.getCurrDir()
@@ -80,7 +80,7 @@ class GeneticSnake:
         curr_dir = (self.snake.getCurrDir() % 4) - 1
         input = []
         # # map field's rewards
-        if conf.FIELD_AS_IMPUT:
+        if conf.FIELD_AS_INPUT:
             for i in range(field.Field.N):
                 for j in range(self.field.N):
                     if [i,j] == food:
@@ -96,11 +96,14 @@ class GeneticSnake:
             input.append(food[0] / field.Field.N)
             input.append(food[1] / field.Field.N)
             #tale as imput
-            input.append(snake_body[-1][0]/conf.BORDER)
-            input.append(snake_body[-1][1]/conf.BORDER)
+            input.append(snake_body[-1][0]/ field.Field.N)
+            input.append(snake_body[-1][1]/ field.Field.N)
+        # head coord
         input.append(norm_snake_head[0])
         input.append(norm_snake_head[1])
+        # currend dir
         input.append(curr_dir)
+        # current angle between food and head
         input.append(angle)
 
         return input
@@ -110,7 +113,7 @@ class GeneticSnake:
         color = self.snake.color
         self.snake.__init__(visible=visible, color=color)
         self.fitness = 0
-        self.count = self.Nquad
+        self.count = conf.MAX_LIFE_WITHOUT_FOOD
         self.is_dead = False
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
 
@@ -120,7 +123,11 @@ class GeneticSnake:
             #self.fitness -= 1
             return True
         else:
-            self.exposition[:] = self.exposition[1:]
-            self.exposition.append(head)
-            return False
+            # reset if food is found
+            if self.curr_reward == 1:
+                self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
+            else:
+                self.exposition[:] = self.exposition[1:]
+                self.exposition.append(head)
+                return False
 

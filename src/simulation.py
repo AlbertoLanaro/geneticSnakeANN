@@ -26,7 +26,6 @@ class Simulation:
     def simulateGeneration(self, turn=50):
         self.iteration = 0
         for _ in range(turn):
-            self.iteration += 1
             self.update()
             
 
@@ -36,7 +35,6 @@ class Simulation:
     def simulateUntilDeath(self, n_death=1):
         self.iteration = 0
         while self.death_counter < n_death:
-            self.iteration += 1
             self.update()
             #print("dead snake: ", self.death_counter)
             
@@ -74,19 +72,19 @@ class Simulation:
         # Taking the first half and then reproduce them 
         fit = 0
         fit_top = 0 
-        for i in self.geneticSnakes[:self.n_snakes - (conf.N_SNAKE_SURVIVING + 1)]:
+        for i in self.geneticSnakes[:self.n_snakes - conf.N_SNAKE_SURVIVING]:
             fit += i.fitness
             rnd = random.random()
             if rnd > conf.MUTATION_PROBABILITY:
                 i.brain.crossDNA(self.geneticSnakes[random.randint(
-                    self.n_snakes-(conf.N_CROSS), self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(conf.N_CROSS), self.n_snakes - 1)].brain)
+                    self.n_snakes - conf.N_CROSS, self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes - conf.N_CROSS, self.n_snakes - 1)].brain)
             else:
                 i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
-                    self.n_snakes-(conf.N_CROSS), self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes-(conf.N_CROSS), self.n_snakes - 1)].brain)
+                    self.n_snakes- conf.N_CROSS, self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes- conf.N_CROSS, self.n_snakes - 1)].brain)
             i.clear()
-        for i in self.geneticSnakes[self.n_snakes - self.n_snakes-conf.N_SNAKE_SURVIVING : self.n_snakes-conf.N_CROSS -1]:
+        for i in self.geneticSnakes[-conf.N_SNAKE_SURVIVING : self.n_snakes-conf.N_CROSS]:
             fit += i.fitness
-        for i in self.geneticSnakes[self.n_snakes-conf.N_CROSS:]:
+        for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
             fit_top += i.fitness
             i.clear()
         return (fit + fit_top)/self.n_snakes, (fit_top/N), max_fit, min_fit, self.iteration
@@ -118,6 +116,7 @@ class Simulation:
     def update(self):
         self.field.update()
         self.death_counter = 0
+        self.iteration += 1
         for i in self.geneticSnakes:
             i.update()
             # update counter if a snake is dead
