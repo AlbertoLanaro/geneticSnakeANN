@@ -9,6 +9,7 @@ class GeneticSnake:
     def __init__(self, fld, visible = False, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
         self.field = fld
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
+        self.curr_reward = None
         self.snake = snake.Snake(visible = visible)
         # brain input: N*N + curr_dir + head coord + angle
         if conf.FIELD_AS_INPUT:
@@ -41,17 +42,17 @@ class GeneticSnake:
             # map output to possible snake directions
             new_dir = next_possible_dirs[tmp_dir]
             # update snake body
-            curr_reward = self.snake.update(self.field, new_dir)
+            self.curr_reward = self.snake.update(self.field, new_dir)
             # update fitness
             self.count = self.count - 1
             # snake hit walls/himself or no food found for self.count turns
-            if curr_reward == -1 or self.count == 0 or (curr_reward != 1 and self.loop()):
+            if self.curr_reward == -1 or self.count == 0 or (self.curr_reward != 1 and self.loop()):
                 #self.fitness -=  2
                 self.is_dead = True
             # snake found food
-            elif curr_reward == 1:
+            elif self.curr_reward == 1:
                 self.expositionn = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
-                self.fitness += curr_reward
+                self.fitness += self.curr_reward
                 self.count = conf.MAX_LIFE_WITHOUT_FOOD
 
     def getNextPossibleDir(self):
@@ -119,7 +120,11 @@ class GeneticSnake:
             #self.fitness -= 1
             return True
         else:
-            self.exposition[:] = self.exposition[1:]
-            self.exposition.append(head)
-            return False
+            # reset if food is found
+            if self.curr_reward == 1:
+                self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
+            else:
+                self.exposition[:] = self.exposition[1:]
+                self.exposition.append(head)
+                return False
 
