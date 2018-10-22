@@ -2,7 +2,7 @@ import random
 import numpy as np
 from activation_functions import sigmoid, softmax, relu
 import conf 
-
+import pandas as pd
 # brain parameters
 HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
 N_CLASS = 3
@@ -65,9 +65,13 @@ class Brain:
 
         return output
     
-    def DNAsave(self):
-        numpy_DNA = np.asarray(self.DNA)
-        np.savetxt("DNA_1.csv", numpy_DNA, delimiter=",")
+    def DNAsave(self, fitness):
+        app = conf.HIDDEN_LAYER_NEURONS
+        app.append(conf.INPUT_SIZE)
+        app.append(self.DNA)
+        df = pd.DataFrame(app)
+        df.to_csv("DNA_fitness="+str(fitness) +
+                  ".csv", index=False, header=False)
 
 
 

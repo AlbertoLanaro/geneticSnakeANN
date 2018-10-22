@@ -4,6 +4,7 @@ import colors
 import pygame
 import random
 import conf
+import numpy as np
 
 N = conf.N_CROSS
 TIMER = 1  #  [ms]
@@ -64,9 +65,9 @@ class Simulation:
         # sort for fitness
         self.sortSnakesForFitness()
         max_fit = self.geneticSnakes[-1].fitness
-        if max_fit >14:
-            self.geneticSnakes[-1].brain.DNAsave()
-
+        if max_fit > conf.MAX_FITNESS:
+            self.geneticSnakes[-1].brain.DNAsave(max_fit)
+            conf.MAX_FITNESS = max_fit
         min_fit = self.geneticSnakes[0].fitness
         #topfitness = self.geneticSnakes[-1].fitness
         # Taking the first half and then reproduce them 
@@ -84,10 +85,63 @@ class Simulation:
             i.clear()
         for i in self.geneticSnakes[-conf.N_SNAKE_SURVIVING : self.n_snakes-conf.N_CROSS]:
             fit += i.fitness
+            i.clear()
         for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
             fit_top += i.fitness
             i.clear()
         return (fit + fit_top)/self.n_snakes, (fit_top/N), max_fit, min_fit, self.iteration
+
+
+    # Function that upgrate generation with a different distribution of parents
+    # It choose the parents with higher fitness with more prbability
+    # We   1)choose the N parents best parents of the simulation
+    #      2) Create the vector of their ftinesses
+    #      3) CumSum the fitnesses vector
+    #      4) Create a random int from 0 to sum(fitnesses)
+    #      5) Choose the snake which fitness is nearer ahead the  rando int
+
+    def upgradeGenerationNotUniform(self):
+        # sort for fitness
+        self.sortSnakesForFitness()        
+        max_fit = self.geneticSnakes[-1].fitness
+        if max_fit > conf.MAX_FITNESS:
+            self.geneticSnakes[-1].brain.DNAsave(max_fit)
+            conf.MAX_FITNESS = max_fit
+        min_fit = self.geneticSnakes[0].fitness
+        # Creating the fitnesses vector
+        fit_array = []
+        for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
+            fit_array.append(i.fitness)
+        fit_array = np.cumsum(np.array(fit_array))
+        # Taking the (n_snakes - N_SNAKE_SURVIVING) wost snakes and 
+        # substitute them with other reproduced from the better snakes
+        fit = 0
+        average_distribution = 0
+        fit_top = 0
+        for i in self.geneticSnakes[:self.n_snakes - conf.N_SNAKE_SURVIVING]:
+            fit += i.fitness
+            rnd = random.random()
+            if rnd > conf.MUTATION_PROBABILITY:
+                random_index1 = random_array(fit_array)
+                average_distribution += self.geneticSnakes[random_index1].fitness
+                i.brain.crossDNA(
+                    self.geneticSnakes[random_index1].brain, self.geneticSnakes[random_array(fit_array)].brain)
+            else:
+                random_index1 = random_array(fit_array)
+                value = self.geneticSnakes[random_index1].fitness
+                if value > 6:
+                    print("Fitness alta, > 6: valore, indice:" + str(value)+ str(random_index1))
+                average_distribution += value
+                i.brain.crossDNAAndMutate(
+                    self.geneticSnakes[random_index1].brain, self.geneticSnakes[random_array(fit_array)].brain)
+            i.clear()
+        for i in self.geneticSnakes[-conf.N_SNAKE_SURVIVING: self.n_snakes-conf.N_CROSS]:
+            fit += i.fitness
+            i.clear()
+        for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
+            fit_top += i.fitness
+            i.clear()
+        return (fit + fit_top)/self.n_snakes, (fit_top/N), (average_distribution/conf.N_SNAKE_SURVIVING), max_fit, min_fit, self.iteration
 
     def showBestN(self, N=10): 
         self.field.view()
@@ -124,3 +178,17 @@ class Simulation:
                 self.death_counter += 1
         if self.field.visible:
             pygame.display.flip()
+
+#Utility function 
+#given a sorted array it gives a random index. 
+# The distrubution is not uniform it's proportional to the distance from the 
+# previus element
+def random_array(fit_array):
+    rnd = random.randint(1, fit_array[-1])
+    i = 1
+    while True:
+        if i == len(fit_array):
+            return -(i)
+        if rnd > fit_array[-i-1]:
+            return -i
+        i += 1
