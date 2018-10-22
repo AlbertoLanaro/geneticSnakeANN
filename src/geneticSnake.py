@@ -12,7 +12,7 @@ class GeneticSnake:
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
         self.snake = snake.Snake(visible = visible)
         # brain input: N*N + curr_dir + head coord + angle
-        if conf.FIELD_AS_IMPUT:
+        if conf.FIELD_AS_INPUT:
             fieldarea = conf.BORDER **2
         else:
             fieldarea = 4
@@ -80,7 +80,7 @@ class GeneticSnake:
         curr_dir = (self.snake.getCurrDir() % 4) - 1
         input = []
         # # map field's rewards
-        if conf.FIELD_AS_IMPUT:
+        if conf.FIELD_AS_INPUT:
             for i in range(field.Field.N):
                 for j in range(self.field.N):
                     if [i,j] == food:

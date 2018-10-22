@@ -12,7 +12,7 @@ N_CLASS = 3
 BORDER = 8
 #if true the snake see all the field if false 
 #just his head position, the food and direction
-FIELD_AS_IMPUT = False
+FIELD_AS_INPUT = False
 #mutation adding scale factor
 EPSILON = 0.3
 DNA_SIZE = (BORDER**2+3)*HIDDEN_LAYER_NEURONS[0]
