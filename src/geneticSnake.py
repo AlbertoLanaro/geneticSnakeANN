@@ -96,11 +96,14 @@ class GeneticSnake:
             input.append(food[0] / field.Field.N)
             input.append(food[1] / field.Field.N)
             #tale as imput
-            input.append(snake_body[-1][0]/conf.BORDER)
-            input.append(snake_body[-1][1]/conf.BORDER)
+            input.append(snake_body[-1][0]/ field.Field.N)
+            input.append(snake_body[-1][1]/ field.Field.N)
+        # head coord
         input.append(norm_snake_head[0])
         input.append(norm_snake_head[1])
+        # currend dir
         input.append(curr_dir)
+        # current angle between food and head
         input.append(angle)
 
         return input
