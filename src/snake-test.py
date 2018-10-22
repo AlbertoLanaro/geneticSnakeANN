@@ -15,7 +15,9 @@ if __name__ == "__main__":
         geneticSnakeGame.simulation.simulateUntilDeath(n_death=conf.N_DEATH) #simulateUntilDeathOrTimer(n_death=conf.N_DEATH, N = 120) #simulateGeneration(turn=50)
         geneticSnakeGame.simulation.showBestN(N=5)
         meanfit, top_mean, maxfit, minfit, ret = geneticSnakeGame.simulation.upgradeGeneration()
-        print("\tmean fitness: %.3f, top_mean_fitness %.3f [max: %.3f, min: %.3f, iterations: %d]" % (meanfit,top_mean, maxfit, minfit, ret))
+        #meanfit, top_mean, Average_parent, maxfit, minfit, ret = geneticSnakeGame.simulation.upgradeGenerationNotUniform()
+        print("\tmean fitness: %.3f, top_mean_fitness %.3f [max: %.3f, min: %.3f, iterations: %d]" % (
+            meanfit, top_mean, maxfit, minfit, ret))
         fitness.append(meanfit)
         topfitness.append(top_mean)
     plt.plot(np.array(fitness), c="pink")

@@ -14,6 +14,7 @@ class GeneticSnake:
         if conf.FIELD_AS_INPUT:
             fieldarea = conf.BORDER **2
         else:
+            #food position and tale position = 4
             fieldarea = 4
         input_size = 5 + fieldarea # field.Field.N ** 2 + 4
         if reproduced:
