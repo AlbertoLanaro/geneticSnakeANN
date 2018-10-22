@@ -5,7 +5,7 @@ import conf
 import pandas as pd
 # brain parameters
 HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
-N_CLASS = 3
+N_CLASS = conf.N_CLASS
 p_mutation = conf.MUTATION_RATE
 
 
