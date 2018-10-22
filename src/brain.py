@@ -20,9 +20,10 @@ class Brain:
             self.DNA = [ 2 * np.random.random(input_len * HIDDEN_UNITS[0]) - 1]
             # hidden layers
             for n in range(len(HIDDEN_UNITS) - 1):
-                self.DNA.append(2 * np.random.random(HIDDEN_UNITS[n] * HIDDEN_UNITS[n+1]) - 1)
+                self.DNA.append(conf.UNIFORMSIZE*(
+                    2 * np.random.random(HIDDEN_UNITS[n] * HIDDEN_UNITS[n+1]) - 1))
             # output layers
-            self.DNA.append(2 * np.random.random(HIDDEN_UNITS[-1] * N_CLASS) - 1)
+            self.DNA.append(conf.UNIFORMSIZE*(2 * np.random.random(HIDDEN_UNITS[-1] * N_CLASS) - 1))
         else:
             # create brain from DNA
             self.DNA = DNA
@@ -33,8 +34,8 @@ class Brain:
             for s in range(len(syn)):
                 p = random.random()
                 if p < p_mutation:
-                    app = syn[s]
-                    syn[s] =  app + conf.EPSILON*(2*random.random() -1)
+                    #app = syn[s]
+                    syn[s] = conf.UNIFORMSIZE*(2*random.random() - 1)
             new_DNA.append(syn)
         self.DNA = new_DNA
 
@@ -56,13 +57,17 @@ class Brain:
         # hidden layers
         # self.DNA[1:-1]
         for d in range(1, len(self.DNA) - 1):
-            l_tmp = sigmoid( np.dot(l_tmp, self.DNA[d].reshape(len(l_tmp), len(self.DNA[d]))) )
+            l_tmp = sigmoid( np.dot(l_tmp, self.DNA[d].reshape([len(l_tmp), HIDDEN_UNITS[d]])))
         # prediction layer
         pred = softmax( np.dot(l_tmp, self.DNA[-1].reshape(len(l_tmp), N_CLASS)) )
         # prediction
         output = np.argmax(pred)
 
         return output
+    
+    def DNAsave(self):
+        numpy_DNA = np.asarray(self.DNA)
+        np.savetxt("DNA_1.csv", numpy_DNA, delimiter=",")
 
 
 

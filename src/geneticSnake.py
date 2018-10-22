@@ -15,7 +15,7 @@ class GeneticSnake:
         if conf.FIELD_AS_IMPUT:
             fieldarea = conf.BORDER **2
         else:
-            fieldarea = 0
+            fieldarea = 4
         input_size = 4 + fieldarea # field.Field.N ** 2 + 4
         if reproduced:
             self.brain = brain.Brain(input_size, reproduced = True, parent0 = parent0, parent1 = parent1)
@@ -35,8 +35,8 @@ class GeneticSnake:
             next_possible_dirs = self.getNextPossibleDir()
             # get new direction from brain
             # outputs:
-            #   0: go on
-            #   1: left
+            #   0: left
+            #   1: go on
             #   2: right
             tmp_dir = self.brain.predictOutput(curr_input)
             # map output to possible snake directions
@@ -51,6 +51,7 @@ class GeneticSnake:
                 self.is_dead = True
             # snake found food
             elif curr_reward == 1:
+                self.expositionn = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
                 self.fitness += curr_reward
                 self.count = self.Nquad
 
@@ -90,6 +91,13 @@ class GeneticSnake:
                         input.append(-2)
                     else:
                         input.append(0)
+        else:
+            #food as imput
+            input.append(food[0] / field.Field.N)
+            input.append(food[1] / field.Field.N)
+            #tale as imput
+            input.append(snake_body[-1][0]/conf.BORDER)
+            input.append(snake_body[-1][1]/conf.BORDER)
         input.append(norm_snake_head[0])
         input.append(norm_snake_head[1])
         input.append(curr_dir)
@@ -104,6 +112,7 @@ class GeneticSnake:
         self.fitness = 0
         self.count = self.Nquad
         self.is_dead = False
+        self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
 
     def loop(self):
         head = self.snake.getBodyPosition()[0]

@@ -66,6 +66,9 @@ class Simulation:
         # sort for fitness
         self.sortSnakesForFitness()
         max_fit = self.geneticSnakes[-1].fitness
+        if max_fit >14:
+            self.geneticSnakes[-1].brain.DNAsave()
+
         min_fit = self.geneticSnakes[0].fitness
         #topfitness = self.geneticSnakes[-1].fitness
         # Taking the first half and then reproduce them 

@@ -1,10 +1,11 @@
 import pygame
 from colors import WHITE
+import conf
 
 class Field:
     SCALE = 30
-    N = 8
-    BORDERS = True
+    N = conf.BORDER
+    BORDERS = False
     def __init__(self, visible=False):
         self.visible = visible
         self.field = pygame.display.set_mode((Field.N * Field.SCALE, Field.N * Field.SCALE))
