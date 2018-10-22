@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+
+
 '''
 Create the world with borders and food coordinates
 
@@ -9,7 +10,7 @@ World coordinates system
 V  2
 <  3
 
-/  -----------------------------  \
+/  -----------------------------  
 |  00,01,02,03,04,05,06,07,08,09  |
 |  10,11,12,13,14,15,16,17,18,19  |
 |  .............................  |
@@ -17,7 +18,7 @@ V  2
 |  .............................  |
 |  .............................  |
 |  90,91,92,93,94,95,96,97,98,99  |
-\  -----------------------------  /
+  -----------------------------  /
 
 
 
@@ -38,23 +39,27 @@ V  2
 '''
 
 import pygame
-
 from random import randint
 import field
 import colors
 
 class Snake:
-    def __init__(self):
+    def __init__(self, visible = False, color = None):
         #graphics
         self.cube = pygame.Surface((field.Field.SCALE, field.Field.SCALE))
-        self.cube.fill(colors.random())
+        if color is not None:
+            self.color = color
+        else:
+            self.color = colors.random()
+        self.cube.fill(self.color)
         self.timer = 0
         self.size = 1
+        self.visible = visible
 		#define head start
-        self.body =  [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
+        self.body = [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
         self.score = 0 # inital score value
-        self.prev_dir = randint(0, 3)  # previous direction
-        self.curr_dir = self.prev_dir # current direction
+        self.curr_dir = randint(0, 3)  # previous direction
+        self.is_dead = False # flag to indicate if the snake is dead
         self.createFood()
 
     def createFood(self):
@@ -69,8 +74,8 @@ class Snake:
                 return True
         return False
 
-    def getPrevDir(self):
-        return self.prev_dir
+    def getCurrDir(self):
+        return self.curr_dir
 
     def getFoodPosition(self):
         return self.food
@@ -78,15 +83,15 @@ class Snake:
     def getBodyPosition(self):
         return self.body
 
-
     '''
     1)Update snake position knowed the direction
-    2)Check if it'dead -> return -1
+    2)Check if it's dead -> return -1
     3)Check if it ate some food -> return 1 and create new food
     4)eventually delete the tail
     5)draw the snake and the food
     '''
     def update(self, fld, direction):
+        self.curr_dir = direction
         self.timer += 1
         self.body.insert(0, [self.body[0][0] + (direction == 1 and 1) +
             (direction == 3 and -1), self.body[0][1] +
@@ -121,13 +126,21 @@ class Snake:
             ret = 1
         else:
             # update snake's body
-            last = self.body.pop()
+            _ = self.body.pop()
             ret = 0
-        if fld.gui:
+        if fld.visible and self.visible:
             self.show(fld.field)
+            
         return ret
 
     def show(self, fld):
         for bit in self.body:
             fld.blit(self.cube, (bit[0] * field.Field.SCALE, bit[1] * field.Field.SCALE))
         fld.blit(self.cube, (self.food[0] * field.Field.SCALE, self.food[1] * field.Field.SCALE))
+
+    #manage the snakes visibility
+    def view(self):
+        self.visible = True
+
+    def hide(self):
+        self.visible = False

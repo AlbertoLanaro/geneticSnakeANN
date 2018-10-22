@@ -17,7 +17,7 @@ SCALE = field.Field.SCALE
 def main():
     #creo campo
     sn = snake.Snake()
-    fld = field.Field()
+    fld = field.Field(visible=True)
     clock = pygame.time.Clock()
     pygame.time.set_timer(1, 500)
     direction = 1
