@@ -26,7 +26,7 @@ ITERATION = 50
 #ho many snakes are mutated
 MUTATION_PROBABILITY = 100/(N_SNAKE)
 #how many turns a snake survives without eating
-MAX_LIFE_WITHOUT_FOOD = 45
+MAX_LIFE_WITHOUT_FOOD = BORDER**2 / 2
 #scala distri
 UNIFORMSIZE = 7
 

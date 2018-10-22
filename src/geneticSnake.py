@@ -7,7 +7,6 @@ import math
 
 class GeneticSnake:
     def __init__(self, fld, visible = False, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
-        self.Nquad = conf.MAX_LIFE_WITHOUT_FOOD
         self.field = fld
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
         self.snake = snake.Snake(visible = visible)
@@ -24,7 +23,7 @@ class GeneticSnake:
         else:
             self.brain = brain.Brain(input_size, DNA = DNA)
         self.fitness = 0
-        self.count = self.Nquad
+        self.count = conf.MAX_LIFE_WITHOUT_FOOD
         self.is_dead = False
 
     def update(self):
@@ -53,7 +52,7 @@ class GeneticSnake:
             elif curr_reward == 1:
                 self.expositionn = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
                 self.fitness += curr_reward
-                self.count = self.Nquad
+                self.count = conf.MAX_LIFE_WITHOUT_FOOD
 
     def getNextPossibleDir(self):
         curr_dir = self.snake.getCurrDir()
@@ -110,7 +109,7 @@ class GeneticSnake:
         color = self.snake.color
         self.snake.__init__(visible=visible, color=color)
         self.fitness = 0
-        self.count = self.Nquad
+        self.count = conf.MAX_LIFE_WITHOUT_FOOD
         self.is_dead = False
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
 
