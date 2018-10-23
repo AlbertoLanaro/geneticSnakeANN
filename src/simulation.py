@@ -178,6 +178,7 @@ The distrubution is not uniform: it's proportional to the distance from the prev
 '''
 def random_array(fit_array):
     rnd = random.randint(1, fit_array[-1])
+    
     i = 1
     while True:
         if i == len(fit_array):
