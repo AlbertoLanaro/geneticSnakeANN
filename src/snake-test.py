@@ -2,14 +2,17 @@ import simulation
 import matplotlib.pyplot as plt
 import numpy as np
 import conf
+import input
  
 
 
 if __name__ == "__main__":
+    input_type = input.HybridInput()
     fitness = []
     topfitness = []
     plt.figure(figsize=(10, 10))
-    simulation = simulation.Simulation(n_snakes=conf.N_SNAKE, visible=True)
+    simulation = simulation.Simulation(
+        input_type, n_snakes=conf.N_SNAKE, visible=True)
     #geneticSnakeGame = geneticControl.GeneticControl(visible=True, n_snakes=conf.N_SNAKE)
     for i in range(conf.ITERATION):
         print("@ generation "+str(i))

@@ -74,7 +74,7 @@ class Brain:
             "INPUT_LEN": conf.INPUT_SIZE,
             "DNA": DNA
         }
-        with open("DNA_fitness="+str(fitness) +
+        with open("jsonstore/DNA_fitness="+str(fitness) +
                   ".json", 'w') as f:
             json.dump(store, f, ensure_ascii=False)
 

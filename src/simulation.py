@@ -5,18 +5,22 @@ import pygame
 import random
 import conf
 import numpy as np
+import time
 
 N = conf.N_CROSS
 
 class Simulation:
-    def __init__(self, n_snakes=1000, visible=False):
+    def __init__(self, input_type, n_snakes=1000, visible=False, timer = 0):
         # field of the current generation
+
+        self.timer = timer
         self.field = field.Field(visible)
         self.iteration = 0
         self.n_snakes = n_snakes
         self.death_counter = 0
         # list of snake created for the current simulation
-        self.geneticSnakes = [geneticSnake.GeneticSnake(self.field, visible = visible) for _ in range(n_snakes)]
+        self.geneticSnakes = [geneticSnake.GeneticSnake(
+            self.field, input_type, visible=visible) for _ in range(n_snakes)]
 
     '''
     Simulation duration is set to "turn" iteration
@@ -171,6 +175,8 @@ class Simulation:
                 self.death_counter += 1
         if self.field.visible:
             pygame.display.flip()
+        if self.timer:
+            time.sleep(self.timer)
 '''
 Utility function 
 given a sorted array it gives a random index. 
