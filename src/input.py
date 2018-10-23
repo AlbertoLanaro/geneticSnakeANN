@@ -101,52 +101,52 @@ class HybridInput:
 
     def get_abs_up_view(self, snake):
         snake_head = snake.getBodyPosition()[0]
-        for i in range(1, conf.BORDER):
-            if [snake_head[0], snake_head[1] - i] == snake.food:
+        for i in range(1, conf.BORDER - 1):
+            if [snake_head[0], (snake_head[1] - i)%conf.BORDER] == snake.food:
                 return 1
             elif conf.BORDER_BOOL == True:
-                if [snake_head[0], snake_head[1] - i] in snake.getBodyPosition() or [snake_head[0], snake_head[1] - i] == -1:
+                if [snake_head[0], (snake_head[1] - i)%conf.BORDER] in snake.getBodyPosition() or [snake_head[0], (snake_head[1] - i)] == -1:
                     return -1
-            elif [snake_head[0], snake_head[1] - i] in snake.getBodyPosition():
+            elif [snake_head[0], (snake_head[1] - i)%conf.BORDER] in snake.getBodyPosition():
                 return -1
 
         return 0
 
     def get_abs_down_view(self, snake):
         snake_head = snake.getBodyPosition()[0]
-        for i in range(1, conf.BORDER):
-            if [snake_head[0], snake_head[1] + i] == snake.food:
+        for i in range(1, conf.BORDER - 1):
+            if [snake_head[0], (snake_head[1] + i) % conf.BORDER] == snake.food:
                 return 1
             elif conf.BORDER_BOOL == True:
-                if [snake_head[0], snake_head[1] + i] in snake.getBodyPosition() or [snake_head[0], snake_head[1] + i] == conf.BORDER:
+                if [snake_head[0], (snake_head[1] + i) % conf.BORDER] in snake.getBodyPosition() or [snake_head[0], (snake_head[1] + i)] == conf.BORDER:
                     return -1
-            elif [snake_head[0], snake_head[1] + i] in snake.getBodyPosition():
+            elif [snake_head[0], (snake_head[1] + i) % conf.BORDER] in snake.getBodyPosition():
                 return -1
 
         return 0
 
     def get_abs_left_view(self, snake):
         snake_head = snake.getBodyPosition()[0]
-        for i in range(1, conf.BORDER):
-            if [snake_head[0] - i, snake_head[1]] == snake.food:
+        for i in range(1, conf.BORDER -1):
+            if [(snake_head[0] - i)%conf.BORDER, snake_head[1]] == snake.food:
                 return 1
             elif conf.BORDER:
-                if [snake_head[0] - i, snake_head[1]] in snake.getBodyPosition() or [snake_head[0] - i, snake_head[1]] == -1:
+                if [(snake_head[0] - i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition() or [(snake_head[0] - i), snake_head[1]] == -1:
                     return -1
-            elif [snake_head[0] - i, snake_head[1]] in snake.getBodyPosition():
+            elif [(snake_head[0] - i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition():
                 return -1
 
         return 0
 
     def get_abs_right_view(self, snake):
         snake_head = snake.getBodyPosition()[0]
-        for i in range(1, conf.BORDER):
-            if [snake_head[0] + i, snake_head[1]] == snake.food:
+        for i in range(1, conf.BORDER -1 ):
+            if [(snake_head[0] + i)%conf.BORDER, snake_head[1]] == snake.food:
                 return 1
             elif conf.BORDER:
-                if [snake_head[0] + i, snake_head[1]] in snake.getBodyPosition() or [snake_head[0] + i, snake_head[1]] == conf.BORDER:
+                if [(snake_head[0] + i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition() or [(snake_head[0] + i), snake_head[1]] == conf.BORDER:
                     return -1
-            elif [snake_head[0] + i, snake_head[1]] in snake.getBodyPosition():
+            elif [(snake_head[0] + i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition():
                 return-1
 
         return 0
