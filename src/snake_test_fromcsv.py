@@ -5,10 +5,11 @@ import numpy as np
 import conf
 import sys
 import json
-import time
+import input
 
 
 if __name__ == "__main__":
+    input_type = input.HybridInput()
     if len(sys.argv) == 1:
         print("Missing file_name argument")
     else:
@@ -25,7 +26,8 @@ if __name__ == "__main__":
             for i in DNA:
                 npDNA.append(np.array(i))
             j = 0
-            simulation = simulation.Simulation(visible= True, n_snakes=1, timer=0.1)
+            simulation = simulation.Simulation(
+                input_type, visible=True, n_snakes=1, timer=0.1)
             simulation.geneticSnakes[0].brain.DNA = npDNA
             simulation.simulateUntilDeath(1)
             print(simulation.geneticSnakes[0].fitness)
