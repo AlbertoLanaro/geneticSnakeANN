@@ -4,11 +4,18 @@ from activation_functions import sigmoid, softmax, relu
 import conf 
 import pandas as pd
 import json
+import os
+
 # brain parameters
 HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
 N_CLASS = conf.N_CLASS
 p_mutation = conf.MUTATION_RATE
 
+# create folder to store json file of the best snakes
+try:
+    os.makedirs("./jsonstore")
+except:
+    pass
 
 class Brain:
     def __init__(self, input_len, DNA = None, reproduced = False, parent0 = None, parent1 = None):
@@ -74,7 +81,7 @@ class Brain:
             "INPUT_LEN": conf.INPUT_SIZE,
             "DNA": DNA
         }
-        with open("jsonstore/DNA_fitness="+str(fitness) +
+        with open("./jsonstore/DNA_fitness="+str(fitness) +
                   ".json", 'w') as f:
             json.dump(store, f, ensure_ascii=False)
 
