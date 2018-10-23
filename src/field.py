@@ -4,9 +4,9 @@ import conf
 
 class Field:
     SCALE = 30
-    TIMER = 1  #  [ms]
+    TIMER = 10  #  [ms]
     N = conf.BORDER
-    BORDERS = False
+    BORDERS = conf.BORDER_BOOL
     def __init__(self, visible=False):
         self.visible = visible
         if visible:

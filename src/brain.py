@@ -3,6 +3,7 @@ import numpy as np
 from activation_functions import sigmoid, softmax, relu
 import conf 
 import pandas as pd
+import json
 # brain parameters
 HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
 N_CLASS = conf.N_CLASS
@@ -65,12 +66,17 @@ class Brain:
         return output
     
     def DNAsave(self, fitness):
-        app = conf.HIDDEN_LAYER_NEURONS
-        app.append(conf.INPUT_SIZE)
-        app.append(self.DNA)
-        df = pd.DataFrame(app)
-        df.to_csv("DNA_fitness="+str(fitness) +
-                  ".csv", index=False, header=False)
+        DNA = []
+        for i in self.DNA:
+            DNA.append(i.tolist())
+        store = {
+            "HIDDEN_LAYER": conf.HIDDEN_LAYER_NEURONS,
+            "INPUT_LEN": conf.INPUT_SIZE,
+            "DNA": DNA
+        }
+        with open("jsonstore/DNA_fitness="+str(fitness) +
+                  ".json", 'w') as f:
+            json.dump(store, f, ensure_ascii=False)
 
 
 

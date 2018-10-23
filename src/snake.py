@@ -1,4 +1,4 @@
-
+import conf
 
 '''
 Create the world with borders and food coordinates
@@ -56,17 +56,17 @@ class Snake:
         self.size = 1
         self.visible = visible
 		#define head start
-        self.body = [[randint(1, field.Field.N - 1), randint(1, field.Field.N - 1)]]
+        self.body = [[randint(1, conf.BORDER - 1), randint(1, conf.BORDER - 1)]]
         self.score = 0 # inital score value
         self.curr_dir = randint(0, 3)  # previous direction
         self.is_dead = False # flag to indicate if the snake is dead
         self.createFood()
 
     def createFood(self):
-        self.food = [randint(2, field.Field.N - 2), randint(2, field.Field.N - 2)]
+        self.food = [randint(2, conf.BORDER - 2), randint(2, conf.BORDER - 2)]
 		# food must not be in the same position of the snake
         while(self.foodOnSnake() == True):
-            self.food = [randint(2, field.Field.N - 2), randint(2, field.Field.N - 2)]
+            self.food = [randint(2, conf.BORDER - 2), randint(2, conf.BORDER - 2)]
 
     def foodOnSnake(self):
         for i in self.body:
@@ -100,14 +100,14 @@ class Snake:
         # check if snake hit borders
         if self.body[0] in self.body[1:]:
             return -1
-        elif self.body[0][0] == -1 or self.body[0][0] == field.Field.N or self.body[0][1] == -1 or self.body[0][1] == field.Field.N:
+        elif self.body[0][0] == -1 or self.body[0][0] == conf.BORDER or self.body[0][1] == -1 or self.body[0][1] == conf.BORDER:
             if field.Field.BORDERS == True:
                 return -1
             else:
                 # snake appears on the other side of the screen
                 if direction == 0:
                     self.body.pop(0)
-                    self.body.insert(0, [self.body[0][0], field.Field.N - 1])
+                    self.body.insert(0, [self.body[0][0], conf.BORDER - 1])
                 if direction == 1:
                     self.body.pop(0)
                     self.body.insert(0, [0 , self.body[0][1]])
@@ -116,7 +116,7 @@ class Snake:
                     self.body.insert(0, [self.body[0][0], 0])
                 if direction == 3:
                     self.body.pop(0)
-                    self.body.insert(0, [field.Field.N - 1, self.body[0][1]])
+                    self.body.insert(0, [conf.BORDER - 1, self.body[0][1]])
 
         # check if snake head is in some food coordinates
         if self.body[0] == self.food:

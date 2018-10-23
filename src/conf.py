@@ -11,6 +11,8 @@ N_SNAKE_SURVIVING = int(0.6 * N_SNAKE)
 N_CLASS = 3
 #snake field dimention
 BORDER = 8
+#if border are dangerous
+BORDER_BOOL = False
 #if true the snake see all the field if false 
 #just his head position, the food and direction
 FIELD_AS_INPUT = False
@@ -29,7 +31,7 @@ DNA_SIZE += HIDDEN_LAYER_NEURONS[-1]*N_CLASS
 #how many wight are changed
 MUTATION_RATE = 0.01
 
-ITERATION = 10
+ITERATION = 40
 #ho many snakes are mutated
 MUTATION_PROBABILITY = 0/(N_SNAKE)
 #how many turns a snake survives without eating
@@ -37,5 +39,5 @@ MAX_LIFE_WITHOUT_FOOD = BORDER**2 / 2
 #scala distri
 UNIFORMSIZE = 3
 #max fitness 
-MAX_FITNESS = 12
+MAX_FITNESS = 18
 
