@@ -1,5 +1,5 @@
-HIDDEN_LAYER_NEURONS = [6, 10]
-#
+HIDDEN_LAYER_NEURONS = [10]
+# number of snakes used in each generation
 N_SNAKE = 10000
 # simulate until N_DEATH deaths
 N_DEATH = int(1 * N_SNAKE)
@@ -29,7 +29,7 @@ DNA_SIZE += HIDDEN_LAYER_NEURONS[-1]*N_CLASS
 #how many wight are changed
 MUTATION_RATE = 0.01
 
-ITERATION = 50
+ITERATION = 10
 #ho many snakes are mutated
 MUTATION_PROBABILITY = 0/(N_SNAKE)
 #how many turns a snake survives without eating

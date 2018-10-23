@@ -7,15 +7,12 @@ import conf
 import numpy as np
 
 N = conf.N_CROSS
-TIMER = 1  #  [ms]
+
 class Simulation:
     def __init__(self, n_snakes=1000, visible=False):
         # field of the current generation
         self.field = field.Field(visible)
         self.iteration = 0
-        if visible:
-            # set simulation update timer
-            pygame.time.set_timer(1, TIMER)
         self.n_snakes = n_snakes
         self.death_counter = 0
         # list of snake created for the current simulation
@@ -31,7 +28,7 @@ class Simulation:
             
 
     '''
-    Simulation duration is triggered by the death of one or more snakes
+    Simulation end is triggered by the death of one or more snakes
     '''
     def simulateUntilDeath(self, n_death=1):
         self.iteration = 0
@@ -41,7 +38,7 @@ class Simulation:
             
         self.death_counter = 0
     '''
-    Simulation duration is triggered by the death of one or more snakes
+    Simulation end is triggered by the death of one or more snakes
     or timer ending
     '''
     def simulateUntilDeathOrTimer(self, n_death=1, N = 100):
@@ -53,7 +50,7 @@ class Simulation:
 
         self.death_counter = 0
     '''
-    Sort the list of geneticSnake from higher to lower fitness
+    Sort the list of geneticSnake from lower to higher fitness
     '''
     def sortSnakesForFitness(self):
         self.geneticSnakes.sort(key=lambda x: x.fitness)
@@ -91,15 +88,15 @@ class Simulation:
             i.clear()
         return (fit + fit_top)/self.n_snakes, (fit_top/N), max_fit, min_fit, self.iteration
 
-
-    # Function that upgrate generation with a different distribution of parents
-    # It choose the parents with higher fitness with more prbability
-    # We   1)choose the N parents best parents of the simulation
-    #      2) Create the vector of their ftinesses
-    #      3) CumSum the fitnesses vector
-    #      4) Create a random int from 0 to sum(fitnesses)
-    #      5) Choose the snake which fitness is nearer ahead the  rando int
-
+    '''
+    Function that upgrate generation with a different distribution of parents
+    It choose the parents with higher fitness with more prbability
+    We   1)choose the N parents best parents of the simulation
+         2) Create the vector of their ftinesses
+         3) CumSum the fitnesses vector
+         4) Create a random int from 0 to sum(fitnesses)
+         5) Choose the snake which fitness is nearer ahead the random int
+    '''
     def upgradeGenerationNotUniform(self):
         # sort for fitness
         self.sortSnakesForFitness()        
@@ -118,26 +115,30 @@ class Simulation:
         fit = 0
         average_distribution = 0
         fit_top = 0
+        # 1. new snakes (with mutation)
         for i in self.geneticSnakes[:self.n_snakes - conf.N_SNAKE_SURVIVING]:
             fit += i.fitness
             rnd = random.random()
             if rnd > conf.MUTATION_PROBABILITY:
+                random_index0 = random_array(fit_array)
                 random_index1 = random_array(fit_array)
                 average_distribution += self.geneticSnakes[random_index1].fitness
                 i.brain.crossDNA(
-                    self.geneticSnakes[random_index1].brain, self.geneticSnakes[random_array(fit_array)].brain)
+                    self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain)
             else:
+                random_index0 = random_array(fit_array)
                 random_index1 = random_array(fit_array)
                 value = self.geneticSnakes[random_index1].fitness
-                if value > 6:
-                    print("Fitness alta, > 6: valore, indice:" + str(value)+ str(random_index1))
                 average_distribution += value
                 i.brain.crossDNAAndMutate(
-                    self.geneticSnakes[random_index1].brain, self.geneticSnakes[random_array(fit_array)].brain)
+                    self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain)
             i.clear()
+        # 2. snakes that survive to the next generation
+        # 2.1 snakes that are not used for crossover
         for i in self.geneticSnakes[-conf.N_SNAKE_SURVIVING: self.n_snakes-conf.N_CROSS]:
             fit += i.fitness
             i.clear()
+        # 2.2 snakes with highest fitness that are used for crossover 
         for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
             fit_top += i.fitness
             i.clear()
@@ -149,14 +150,6 @@ class Simulation:
         for i in self.geneticSnakes[:self.n_snakes - N]:
             i.snake.hide()
         for i in self.geneticSnakes[self.n_snakes - N :]:
-            i.snake.view()
-        #i could create some pointer to the object that I will not longer show
-
-    def updateBestN(self, N=10):
-        self.sortSnakesForFitness()
-        for i in self.geneticSnakes[:self.n_snakes - N]:
-            i.snake.hide()
-        for i in self.geneticSnakes[self.n_snakes - N:]:
             i.snake.view()
 
     def stopShowing(self):
@@ -178,11 +171,11 @@ class Simulation:
                 self.death_counter += 1
         if self.field.visible:
             pygame.display.flip()
-
-#Utility function 
-#given a sorted array it gives a random index. 
-# The distrubution is not uniform it's proportional to the distance from the 
-# previus element
+'''
+Utility function 
+given a sorted array it gives a random index. 
+The distrubution is not uniform: it's proportional to the distance from the previus element
+'''
 def random_array(fit_array):
     rnd = random.randint(1, fit_array[-1])
     i = 1

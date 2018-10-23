@@ -8,15 +8,16 @@ import math
 class GeneticSnake:
     def __init__(self, fld, visible = False, DNA = None, reproduced = False, parent0 = None, parent1 = None): # TODO pass a DNA a BRAIN
         self.field = fld
+        # array used to detect if a snake is looping
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
         self.snake = snake.Snake(visible = visible)
-        # brain input: N*N + curr_dir + head coord + angle
+        # use the entire field as ANN input?
         if conf.FIELD_AS_INPUT:
-            fieldarea = conf.BORDER **2
+            input_size = conf.BORDER **2
         else:
-            #food position and tale position = 4
-            fieldarea = 7
-        input_size = 4 + fieldarea # field.Field.N ** 2 + 4
+        # use only other features as input (e.g. food coord, head coord, ...) 
+            input_size = 7
+        input_size = 4 + input_size
         if reproduced:
             self.brain = brain.Brain(input_size, reproduced = True, parent0 = parent0, parent1 = parent1)
         if DNA == None:
@@ -24,9 +25,16 @@ class GeneticSnake:
         else:
             self.brain = brain.Brain(input_size, DNA = DNA)
         self.fitness = 0
+        # max number of steps the snake can take without eating anything
         self.count = conf.MAX_LIFE_WITHOUT_FOOD
         self.is_dead = False
 
+    '''
+    Update the state of the current snake:
+        1. get its next possible directions
+        2. compute features and predict output
+        3. update is_dead flag and fitness
+    '''
     def update(self):
         # update genetic snake only if alive
         if not(self.is_dead):
@@ -55,6 +63,9 @@ class GeneticSnake:
                 self.fitness += curr_reward
                 self.count = conf.MAX_LIFE_WITHOUT_FOOD
 
+    '''
+    Returns the possible direction of the snakes mapped w.r.t. its current direction
+    '''
     def getNextPossibleDir(self):
         curr_dir = self.snake.getCurrDir()
         # left
@@ -65,7 +76,6 @@ class GeneticSnake:
         rel_right = (curr_dir + 1) % 4
 
         return [rel_left, rel_go_on, rel_right]
-
 
     '''
     Constructs ANN's input
@@ -79,7 +89,7 @@ class GeneticSnake:
         angle = math.atan2( (food[1] - snake_head[1]), (food[0] - snake_head[0]) ) # y / x [rad]
         curr_dir = (self.snake.getCurrDir() % 4) - 1
         input = []
-        # # map field's rewards
+        # map the whole field game 
         if conf.FIELD_AS_INPUT:
             for i in range(1, field.Field.N):
                 for j in range(self.field.N):
@@ -92,10 +102,10 @@ class GeneticSnake:
                     else:
                         input.append(0)
         else:
-            #food as input
+            #food coord
             input.append(food[0] / field.Field.N)
             input.append(food[1] / field.Field.N)
-            #tale as imput
+            #tail coord
             input.append(snake_body[-1][0]/ field.Field.N)
             input.append(snake_body[-1][1]/ field.Field.N)
             # what snake sees in his 3 cross directions
@@ -112,12 +122,15 @@ class GeneticSnake:
         # current angle between food and head
         input.append(angle)
 
-
-
         return input
     
+    '''
+    Returns what the snake sees respectively in his left, up and right view
+        1 if food
+        -1 if himself (or border if field.Field.BORDERS is True)
+        0 otherwise
+    '''
     def getViews(self):
-
         # UP
         if self.snake.curr_dir == 0:
             left_rew = self.get_abs_left_view()
@@ -141,6 +154,62 @@ class GeneticSnake:
 
         return left_rew, go_on_rew, right_rew
 
+
+    def get_abs_up_view(self):
+        snake_head = self.snake.getBodyPosition()[0]
+        for i in range(1, field.Field.N):
+            if [snake_head[0], snake_head[1] - i] == self.snake.food:
+                return 1
+            elif  field.Field.BORDERS == True:
+                if [snake_head[0], snake_head[1] - i] in self.snake.getBodyPosition() or [snake_head[0], snake_head[1] - i] == -1:
+                    return -1
+            elif [snake_head[0], snake_head[1] - i] in self.snake.getBodyPosition():
+                return -1
+
+        return 0
+
+    def get_abs_down_view(self):
+        snake_head = self.snake.getBodyPosition()[0]
+        for i in range(1, field.Field.N):
+            if [snake_head[0], snake_head[1] + i] == self.snake.food:
+                return 1
+            elif field.Field.BORDERS == True:
+                if [snake_head[0], snake_head[1] + i] in self.snake.getBodyPosition() or [snake_head[0], snake_head[1] + i] == field.Field.N:
+                    return -1
+            elif [snake_head[0], snake_head[1] + i] in self.snake.getBodyPosition():
+                return -1
+
+        return 0
+
+    def get_abs_left_view(self):
+        snake_head = self.snake.getBodyPosition()[0]
+        for i in range(1, field.Field.N):
+            if [snake_head[0] - i, snake_head[1]] == self.snake.food:
+                return 1
+            elif  field.Field.N:
+                if [snake_head[0] - i, snake_head[1]] in self.snake.getBodyPosition() or [snake_head[0] - i, snake_head[1]] == -1:
+                    return -1
+            elif [snake_head[0] - i, snake_head[1]] in self.snake.getBodyPosition():
+                return -1
+
+        return 0
+
+    def get_abs_right_view(self):
+        snake_head = self.snake.getBodyPosition()[0]
+        for i in range(1, field.Field.N):
+            if [snake_head[0] + i, snake_head[1]] == self.snake.food:
+                return 1
+            elif  field.Field.N:
+                if [snake_head[0] + i, snake_head[1]] in self.snake.getBodyPosition() or [snake_head[0] + i, snake_head[1]] == field.Field.N:
+                    return -1 
+            elif [snake_head[0] + i, snake_head[1]] in self.snake.getBodyPosition():
+                return-1
+
+        return 0
+
+    '''
+    reset the state of the current snake
+    '''
     def clear(self):
         visible = self.snake.visible
         color = self.snake.color
@@ -150,64 +219,14 @@ class GeneticSnake:
         self.is_dead = False
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
 
+    '''
+    Check if snake is looping (bad!)
+    '''
     def loop(self):
         head = self.snake.getBodyPosition()[0]
         if head == self.exposition[0]:
-            #self.fitness -= 1
             return True
         else:
             self.exposition[:] = self.exposition[1:]
             self.exposition.append(head)
             return False
-
-    def get_abs_up_view(self):
-        snake_head = self.snake.getBodyPosition()[0]
-        ret = 0
-        for i in range(1, field.Field.N):
-            if [snake_head[0], snake_head[1] - i] == self.snake.food:
-                ret = 1
-                return ret
-            elif [snake_head[0], snake_head[1] - i] in self.snake.getBodyPosition():
-                ret = -1
-                return ret
-
-        return ret
-
-    def get_abs_down_view(self):
-        snake_head = self.snake.getBodyPosition()[0]
-        ret = 0
-        for i in range(1, field.Field.N):
-            if [snake_head[0], snake_head[1] + i] == self.snake.food:
-                ret = 1
-                return ret
-            elif [snake_head[0], snake_head[1] + i] in self.snake.getBodyPosition():
-                ret = -1
-                return ret
-
-        return ret
-
-    def get_abs_left_view(self):
-        snake_head = self.snake.getBodyPosition()[0]
-        ret = 0
-        for i in range(1, field.Field.N):
-            if [snake_head[0] - i, snake_head[1]] == self.snake.food:
-                ret = 1
-                return ret
-            elif [snake_head[0] - i, snake_head[1]] in self.snake.getBodyPosition():
-                ret = -1
-                return ret
-
-        return ret
-
-    def get_abs_right_view(self):
-        snake_head = self.snake.getBodyPosition()[0]
-        ret = 0
-        for i in range(1, field.Field.N):
-            if [snake_head[0] + i, snake_head[1]] == self.snake.food:
-                ret = 1
-                return ret
-            elif [snake_head[0] + i, snake_head[1]] in self.snake.getBodyPosition():
-                ret = -1
-                return ret
-
-        return ret
