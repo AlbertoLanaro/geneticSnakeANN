@@ -5,7 +5,7 @@ import conf
 import pandas as pd
 # brain parameters
 HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
-N_CLASS = 3
+N_CLASS = conf.N_CLASS
 p_mutation = conf.MUTATION_RATE
 
 
@@ -17,11 +17,10 @@ class Brain:
         elif DNA == None:
             # create random brain synapsis
             # first layer
-            self.DNA = [ 2 * np.random.random(input_len * HIDDEN_UNITS[0]) - 1]
+            self.DNA = [ conf.UNIFORMSIZE*(2 * np.random.random(input_len * HIDDEN_UNITS[0]) - 1) ]
             # hidden layers
             for n in range(len(HIDDEN_UNITS) - 1):
-                self.DNA.append(conf.UNIFORMSIZE*(
-                    2 * np.random.random(HIDDEN_UNITS[n] * HIDDEN_UNITS[n+1]) - 1))
+                self.DNA.append(conf.UNIFORMSIZE*( 2 * np.random.random(HIDDEN_UNITS[n] * HIDDEN_UNITS[n+1]) - 1) )
             # output layers
             self.DNA.append(conf.UNIFORMSIZE*(2 * np.random.random(HIDDEN_UNITS[-1] * N_CLASS) - 1))
         else:

@@ -1,14 +1,14 @@
-HIDDEN_LAYER_NEURONS = [6, 10]
-#
+HIDDEN_LAYER_NEURONS = [10]
+# number of snakes used in each generation
 N_SNAKE = 10000
 # simulate until N_DEATH deaths
 N_DEATH = int(1 * N_SNAKE)
 # select best N_CROSS snakes
-N_CROSS = int(0.01 * N_SNAKE)
+N_CROSS = int(0.001 * N_SNAKE)
 #number of snakes that remains in the next generation
 N_SNAKE_SURVIVING = int(0.6 * N_SNAKE)
-#output dimension
-N_CLASS = 10
+#output dimension (left, go on, right)
+N_CLASS = 3
 #snake field dimention
 BORDER = 8
 #if true the snake see all the field if false 
@@ -29,7 +29,7 @@ DNA_SIZE += HIDDEN_LAYER_NEURONS[-1]*N_CLASS
 #how many wight are changed
 MUTATION_RATE = 0.01
 
-ITERATION = 50
+ITERATION = 10
 #ho many snakes are mutated
 MUTATION_PROBABILITY = 0/(N_SNAKE)
 #how many turns a snake survives without eating
