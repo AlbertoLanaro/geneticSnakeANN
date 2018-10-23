@@ -1,4 +1,4 @@
 __pycache__
-.json
-.vscode
-.csv
+*.json
+*.vscode
+*.csv
