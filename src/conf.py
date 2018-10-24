@@ -23,7 +23,7 @@ else:
     INPUT_SIZE = 5 + 4
 
 #mutation adding scale factor
-EPSILON = 0.3
+EPSILON = 0.001
 DNA_SIZE = (BORDER**2+3)*HIDDEN_LAYER_NEURONS[0]
 for i in range(len(HIDDEN_LAYER_NEURONS)-1):
     DNA_SIZE += HIDDEN_LAYER_NEURONS[i]*HIDDEN_LAYER_NEURONS[i+1]

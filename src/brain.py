@@ -9,7 +9,6 @@ import os
 # brain parameters
 HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
 N_CLASS = conf.N_CLASS
-p_mutation = conf.MUTATION_RATE
 
 # create folder to store json file of the best snakes
 try:
@@ -40,9 +39,9 @@ class Brain:
         for syn in self.DNA:
             for s in range(len(syn)):
                 p = random.random()
-                if p < p_mutation:
-                    #app = syn[s]
-                    syn[s] = conf.UNIFORMSIZE*(2*random.random() - 1)
+                if p < conf.MUTATION_RATE:
+                    # perturbate the correspondent neuron
+                    syn[s] = syn[s] + conf.EPSILON * (2*random.random() - 1)
             new_DNA.append(syn)
         self.DNA = new_DNA
 
