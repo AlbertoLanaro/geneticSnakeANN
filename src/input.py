@@ -53,7 +53,7 @@ class HybridInput:
         input.append(snake_body[-1][0] / conf.BORDER)
         input.append(snake_body[-1][1] / conf.BORDER)
         # what snake sees in his 3 cross directions
-        views = self.getViews(snake)
+        views = getViews(snake)
         for view in views:
             input.append(view)
         #length as input -> TODO normalize
@@ -68,6 +68,111 @@ class HybridInput:
 
         return input
 
+
+class PointOfView:
+    def __init__(self):
+        self.size = 7
+        conf.INPUT_SIZE = 7
+
+    def getInput(self, snake):
+        possible_direction = snake.getNextPossibleDir()
+        input = []
+        # what snake sees in his 3 cross directions
+        head = snake.body[0]
+        next_left = [head[0] + (possible_direction[0] == 1 and 1) +(possible_direction[0] == 3 and -1), head[1] +(possible_direction[0] == 2 and 1) + (possible_direction[0] == 0 and -1)]
+        next_right = [head[0] + (possible_direction[2] == 1 and 1) +(possible_direction[2] == 3 and -1), head[1] +(possible_direction[2] == 2 and 1) + (possible_direction[2] == 0 and -1)]
+        next_straight = [head[0] + (possible_direction[1] == 1 and 1) +
+                        (possible_direction[1] == 3 and -1), head[1] +
+                        (possible_direction[1] == 2 and 1) + (possible_direction[1] == 0 and -1)]
+        input.append(snake.mapPoint(next_left))
+        input.append(snake.mapPoint(next_right))
+        input.append(snake.mapPoint(next_straight))
+        wherefood = findFood(snake.food, head, snake.curr_dir)
+        input.append(wherefood[0])
+        input.append(wherefood[1])
+        input.append(wherefood[2])
+        input.append(wherefood[3])
+        return input
+
+
+
+#map the food position for the snake. It changes for each direction.
+# if food is up -> food_y < head_y if down >
+# if food is left -> food_x < head_x id down >
+left_front = [-1, -1, -1, 1]
+right_front = [1,-1,-1,-1]
+right_bottom = [-1,1,-1,-1]
+left_bottom = [-1,-1,1,-1]
+front = [1,0,0,0]
+right = [0,1,0,0]
+bottom = [0,0,1,0]
+left = [0,0,0,1]
+map = {
+    "--0": left_front,
+    "--1": left_bottom,
+    "--2": right_bottom,
+    "--3": right_front,
+
+    "+-0": right_front,
+    "+-1": left_front,
+    "+-2": left_bottom,
+    "+-3": right_bottom,
+
+    "++0": right_bottom,
+    "++1": right_front,
+    "++2": left_front,
+    "++3": left_bottom,
+
+    "-+0": left_bottom,
+    "-+1": right_bottom,
+    "-+2": right_front,
+    "-+3": left_front,
+
+    "=-0": front,
+    "=-1": left,
+    "=-2": bottom,
+    "=-3": right,
+
+    "+=0": right,
+    "+=1": front,
+    "+=2": left,
+    "+=3": bottom,
+
+    "=+0": bottom,
+    "=+1": right,
+    "=+2": front,
+    "=+3": left,
+
+    "-=0": right,
+    "-=1": front,
+    "-=2": left,
+    "-=3": bottom,
+
+    "==0" : [0,0,0,0],
+    "==1" : [0, 0, 0, 0],
+    "==2" : [0, 0, 0, 0],
+    "==3" : [0, 0, 0, 0]
+}
+
+def findFood(food, head, direction):
+    string = ""
+    if(head[0] > food[0]):
+        string += "-"
+    elif(head[0] < food[0]):
+        string += "+"
+    else:
+        string += "="
+    if(head[1] > food[1]):
+        string += "-"
+    elif(head[1] < food[1]):
+        string += "+"
+    else:
+        string += "="
+    string += str(direction)
+    return map[string]
+    
+    
+        
     '''
     Returns what the snake sees respectively in his left, up and right view
         1 if food
@@ -75,80 +180,101 @@ class HybridInput:
         0 otherwise
     '''
 
-    def getViews(self, snake):
-        # UP
-        if snake.curr_dir == 0:
-            left_rew = self.get_abs_left_view(snake)
-            go_on_rew = self.get_abs_up_view(snake)
-            right_rew = self.get_abs_right_view(snake)
-        # RIGHT
-        elif snake.curr_dir == 1:
-            left_rew = self.get_abs_up_view(snake)
-            go_on_rew = self.get_abs_right_view(snake)
-            right_rew = self.get_abs_down_view(snake)
-        # DOWN
-        elif snake.curr_dir == 2:
-            left_rew = self.get_abs_right_view(snake)
-            go_on_rew = self.get_abs_down_view(snake)
-            right_rew = self.get_abs_left_view(snake)
-        # LEFT
-        elif snake.curr_dir == 3:
-            left_rew = self.get_abs_down_view(snake)
-            go_on_rew = self.get_abs_left_view(snake)
-            right_rew = self.get_abs_up_view(snake)
 
-        return left_rew, go_on_rew, right_rew
 
-    def get_abs_up_view(self, snake):
-        snake_head = snake.getBodyPosition()[0]
-        for i in range(1, conf.BORDER - 1):
-            if [snake_head[0], (snake_head[1] - i)%conf.BORDER] == snake.food:
-                return 1
-            elif conf.BORDER_BOOL == True:
-                if [snake_head[0], (snake_head[1] - i)%conf.BORDER] in snake.getBodyPosition() or [snake_head[0], (snake_head[1] - i)] == -1:
-                    return -1
-            elif [snake_head[0], (snake_head[1] - i)%conf.BORDER] in snake.getBodyPosition():
+def getViews(snake):
+    # UP
+    if snake.curr_dir == 0:
+        left_rew = get_abs_left_view(snake, half = True)
+        go_on_rew = get_abs_up_view(snake)
+        right_rew = get_abs_right_view(snake, half = True)
+    # RIGHT
+    elif snake.curr_dir == 1:
+        left_rew = get_abs_up_view(snake, half=True)
+        go_on_rew = get_abs_right_view(snake)
+        right_rew = get_abs_down_view(snake, half=True)
+    # DOWN
+    elif snake.curr_dir == 2:
+        left_rew = get_abs_right_view(snake, half=True)
+        go_on_rew = get_abs_down_view(snake)
+        right_rew = get_abs_left_view(snake, half=True)
+    # LEFT
+    elif snake.curr_dir == 3:
+        left_rew = get_abs_down_view(snake, half=True)
+        go_on_rew = get_abs_left_view(snake)
+        right_rew = get_abs_up_view(snake, half=True)
+
+    return left_rew, go_on_rew, right_rew
+
+def get_abs_up_view( snake, half= False):
+    snake_head = snake.getBodyPosition()[0]
+    if half:
+        limit = int(conf.BORDER/2)
+    else:
+        limit = conf.BORDER
+    for i in range(1, limit - 1):
+        if [snake_head[0], (snake_head[1] - i)%conf.BORDER] == snake.food:
+            return 1
+        elif conf.BORDER_BOOL == True:
+            if [snake_head[0], (snake_head[1] - i)%conf.BORDER] in snake.getBodyPosition() or [snake_head[0], (snake_head[1] - i)] == -1:
                 return -1
+        elif [snake_head[0], (snake_head[1] - i)%conf.BORDER] in snake.getBodyPosition():
+            return -1
 
-        return 0
+    return 0
 
-    def get_abs_down_view(self, snake):
-        snake_head = snake.getBodyPosition()[0]
-        for i in range(1, conf.BORDER - 1):
-            if [snake_head[0], (snake_head[1] + i) % conf.BORDER] == snake.food:
-                return 1
-            elif conf.BORDER_BOOL == True:
-                if [snake_head[0], (snake_head[1] + i) % conf.BORDER] in snake.getBodyPosition() or [snake_head[0], (snake_head[1] + i)] == conf.BORDER:
-                    return -1
-            elif [snake_head[0], (snake_head[1] + i) % conf.BORDER] in snake.getBodyPosition():
+def get_abs_down_view( snake, half = False):
+    snake_head = snake.getBodyPosition()[0]
+    if half:
+        limit = int(conf.BORDER/2)
+    else:
+        limit = conf.BORDER
+    for i in range(1, limit - 1):
+        if [snake_head[0], (snake_head[1] + i) % conf.BORDER] == snake.food:
+            return 1
+        elif conf.BORDER_BOOL == True:
+            if [snake_head[0], (snake_head[1] + i) % conf.BORDER] in snake.getBodyPosition() or [snake_head[0], (snake_head[1] + i)] == conf.BORDER:
                 return -1
+        elif [snake_head[0], (snake_head[1] + i) % conf.BORDER] in snake.getBodyPosition():
+            return -1
 
-        return 0
+    return 0
 
-    def get_abs_left_view(self, snake):
-        snake_head = snake.getBodyPosition()[0]
-        for i in range(1, conf.BORDER -1):
-            if [(snake_head[0] - i)%conf.BORDER, snake_head[1]] == snake.food:
-                return 1
-            elif conf.BORDER:
-                if [(snake_head[0] - i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition() or [(snake_head[0] - i), snake_head[1]] == -1:
-                    return -1
-            elif [(snake_head[0] - i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition():
+def get_abs_left_view( snake, half = False):
+    snake_head = snake.getBodyPosition()[0]
+    if half:
+        limit = int(conf.BORDER/2)
+    else:
+        limit = conf.BORDER
+    for i in range(1, limit -1):
+        if [(snake_head[0] - i)%conf.BORDER, snake_head[1]] == snake.food:
+            return 1
+        elif conf.BORDER:
+            if [(snake_head[0] - i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition() or [(snake_head[0] - i), snake_head[1]] == -1:
                 return -1
+        elif [(snake_head[0] - i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition():
+            return -1
 
-        return 0
+    return 0
 
-    def get_abs_right_view(self, snake):
-        snake_head = snake.getBodyPosition()[0]
-        for i in range(1, conf.BORDER -1 ):
-            if [(snake_head[0] + i)%conf.BORDER, snake_head[1]] == snake.food:
-                return 1
-            elif conf.BORDER:
-                if [(snake_head[0] + i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition() or [(snake_head[0] + i), snake_head[1]] == conf.BORDER:
-                    return -1
-            elif [(snake_head[0] + i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition():
-                return-1
+def get_abs_right_view( snake, half = False):
+    snake_head = snake.getBodyPosition()[0]
+    if half:
+        limit = int(conf.BORDER/2)
+    else:
+        limit = conf.BORDER
+    for i in range(1, limit -1 ):
+        if [(snake_head[0] + i)%conf.BORDER, snake_head[1]] == snake.food:
+            return 1
+        elif conf.BORDER:
+            if [(snake_head[0] + i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition() or [(snake_head[0] + i), snake_head[1]] == conf.BORDER:
+                return -1
+        elif [(snake_head[0] + i)%conf.BORDER, snake_head[1]] in snake.getBodyPosition():
+            return-1
 
-        return 0
+    return 0
+
+
+
     
 

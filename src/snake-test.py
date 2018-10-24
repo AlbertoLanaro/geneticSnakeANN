@@ -7,7 +7,7 @@ import input
 
 
 if __name__ == "__main__":
-    input_type = input.HybridInput()
+    input_type = input.PointOfView()
     fitness = []
     topfitness = []
     plt.figure(figsize=(10, 10))
@@ -20,8 +20,8 @@ if __name__ == "__main__":
         simulation.showBestN(N=5)
         #meanfit, top_mean, maxfit, minfit, ret = geneticSnakeGame.simulation.upgradeGeneration()
         meanfit, top_mean, Average_parent, maxfit, minfit, ret = simulation.upgradeGenerationNotUniform()
-        print("\tmean fitness: %.3f, top_mean_fitness %.3f [max: %.3f, min: %.3f, iterations: %d]" % (
-            meanfit, top_mean, maxfit, minfit, ret))
+        print("\tmean fitness: %.3f, top_mean_fitness %.3f, avg_parent %.3f [max: %.3f, min: %.3f, iterations: %d]" % (
+            meanfit, top_mean, Average_parent,  maxfit, minfit, ret))
         fitness.append(meanfit)
         topfitness.append(top_mean)
     plt.plot(np.array(fitness), c="pink")

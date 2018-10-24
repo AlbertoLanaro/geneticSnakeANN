@@ -101,7 +101,7 @@ class Snake:
         if self.body[0] in self.body[1:]:
             return -1
         elif self.body[0][0] == -1 or self.body[0][0] == conf.BORDER or self.body[0][1] == -1 or self.body[0][1] == conf.BORDER:
-            if field.Field.BORDERS == True:
+            if conf.BORDER_BOOL == True:
                 return -1
             else:
                 # snake appears on the other side of the screen
@@ -144,3 +144,25 @@ class Snake:
 
     def hide(self):
         self.visible = False
+
+    def mapPoint(self, point):
+        if conf.BORDER_BOOL:
+            if point[0] == -1 or point[1] == -1 or point[0] == conf.BORDER or point[1] == conf.BORDER:
+                return -1 
+        point[0] = point[0] % conf.BORDER
+        point[1] = point[1] % conf.BORDER
+        if point == self.food:
+            return 1
+        if point in self.body:
+            return -1
+        return 0
+
+    def getNextPossibleDir(self):
+        # left
+        rel_left = (self.curr_dir - 1) % 4
+        # go on
+        rel_go_on = self.curr_dir
+        # right
+        rel_right = (self.curr_dir + 1) % 4
+
+        return [rel_left, rel_go_on, rel_right]
