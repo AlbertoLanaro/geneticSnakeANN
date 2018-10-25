@@ -1,5 +1,6 @@
 import pygame
 from colors import WHITE
+from colors import BLACK
 import conf
 
 class Field:
@@ -13,12 +14,12 @@ class Field:
             # set simulation update timer
             pygame.time.set_timer(1, self.TIMER)
         self.field = pygame.display.set_mode((Field.N * Field.SCALE, Field.N * Field.SCALE))
-        self.field.fill(WHITE)
+        self.field.fill(BLACK)
 
     def update(self):
         if self.visible:
             _ = pygame.event.wait()
-            self.field.fill(WHITE)
+            self.field.fill(BLACK)
 
     def view(self):
         self.visible = True

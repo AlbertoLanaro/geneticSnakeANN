@@ -69,6 +69,9 @@ class HybridInput:
         return input
 
 
+#this input type is very simple. 
+# 3 input which map the content of the future cells if he turn right, left, go streight
+#4 input that map where is the food
 class PointOfView:
     def __init__(self):
         self.size = 7
@@ -179,9 +182,6 @@ def findFood(food, head, direction):
         -1 if himself (or border if conf.BORDER_BOOL is True)
         0 otherwise
     '''
-
-
-
 def getViews(snake):
     # UP
     if snake.curr_dir == 0:

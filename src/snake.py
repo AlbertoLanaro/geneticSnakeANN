@@ -83,13 +83,12 @@ class Snake:
     def getBodyPosition(self):
         return self.body
 
-    '''
-    1)Update snake position knowed the direction
-    2)Check if it's dead -> return -1
-    3)Check if it ate some food -> return 1 and create new food
-    4)eventually delete the tail
-    5)draw the snake and the food
-    '''
+    
+    #1)Update snake position knowed the direction
+    #2)Check if it's dead -> return -1
+    #3)Check if it ate some food -> return 1 and create new food
+    #4)eventually delete the tail
+    #5)draw the snake and the food
     def update(self, fld, direction):
         self.curr_dir = direction
         self.timer += 1
@@ -154,7 +153,7 @@ class Snake:
         if point == self.food:
             return 1
         if point in self.body:
-            return -1
+            return -2
         return 0
 
     def getNextPossibleDir(self):
