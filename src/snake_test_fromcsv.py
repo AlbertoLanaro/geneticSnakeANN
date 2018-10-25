@@ -9,7 +9,7 @@ import input
 
 
 if __name__ == "__main__":
-    input_type = input.HybridInput()
+    input_type = input.PointOfView()
     if len(sys.argv) == 1:
         print("Missing file_name argument")
     else:

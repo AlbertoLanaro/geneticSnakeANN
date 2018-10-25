@@ -1,4 +1,4 @@
-HIDDEN_LAYER_NEURONS = [6,6]
+HIDDEN_LAYER_NEURONS = [10,10]
 # number of snakes used in each generation
 N_SNAKE = 10000
 # simulate until N_DEATH deaths
@@ -12,7 +12,7 @@ N_CLASS = 3
 #snake field dimention
 BORDER = 8
 #if border are dangerous
-BORDER_BOOL = False
+BORDER_BOOL = True
 #if true the snake see all the field if false 
 #just his head position, the food and direction
 FIELD_AS_INPUT = False
@@ -23,18 +23,18 @@ else:
     INPUT_SIZE = 5 + 4
 
 #mutation adding scale factor
-EPSILON = 0.1
+EPSILON = 0.5
 
 DNA_SIZE = (BORDER**2+3)*HIDDEN_LAYER_NEURONS[0]
 for i in range(len(HIDDEN_LAYER_NEURONS)-1):
     DNA_SIZE += HIDDEN_LAYER_NEURONS[i]*HIDDEN_LAYER_NEURONS[i+1]
 DNA_SIZE += HIDDEN_LAYER_NEURONS[-1]*N_CLASS
 #how many wight are changed
-MUTATION_RATE = 0.01
+MUTATION_RATE = 0.1
 
 ITERATION = 100
 #ho many snakes are mutated
-MUTATION_PROBABILITY = 2000/(N_SNAKE)
+MUTATION_PROBABILITY = 1
 #how many turns a snake survives without eating
 MAX_LIFE_WITHOUT_FOOD = BORDER**2 / 2
 #scala distri

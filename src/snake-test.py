@@ -13,6 +13,7 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 10))
     simulation = simulation.Simulation(
         input_type, n_snakes=conf.N_SNAKE, visible=True)
+    simulation.showBestN(N=5)
     #geneticSnakeGame = geneticControl.GeneticControl(visible=True, n_snakes=conf.N_SNAKE)
     for i in range(conf.ITERATION):
         print("@ generation "+str(i))
