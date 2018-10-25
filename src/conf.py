@@ -1,6 +1,6 @@
-HIDDEN_LAYER_NEURONS = [4,4,4,4]
+HIDDEN_LAYER_NEURONS = [6,6]
 # number of snakes used in each generation
-N_SNAKE = 10000
+N_SNAKE = 1000
 # simulate until N_DEATH deaths
 N_DEATH = int(1 * N_SNAKE)
 # select best N_CROSS snakes
