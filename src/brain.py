@@ -39,9 +39,14 @@ class Brain:
         for syn in self.DNA:
             for s in range(len(syn)):
                 p = random.random()
-                if p < conf.MUTATION_RATE:
-                    # perturbate the correspondent neuron
-                    syn[s] = syn[s] + conf.EPSILON * (2*random.random() - 1)
+                if conf.EPSILON > 7:
+                    if p < conf.MUTATION_RATE:
+                        # not perturbate but initialize new neuron
+                        syn[s] = conf.UNIFORMSIZE * (2*random.random() - 1)
+                else:
+                    if p < conf.MUTATION_RATE:
+                        # perturbate the correspondent neuron
+                        syn[s] = syn[s] + conf.EPSILON * (2*random.random() - 1)
             new_DNA.append(syn)
         self.DNA = new_DNA
 

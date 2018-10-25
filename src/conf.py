@@ -16,19 +16,11 @@ BORDER_BOOL = True
 #if true the snake see all the field if false 
 #just his head position, the food and direction
 FIELD_AS_INPUT = False
-#input size
-if FIELD_AS_INPUT:
-    INPUT_SIZE = BORDER**2 + 4
-else:
-    INPUT_SIZE = 5 + 4
 
+INPUT_SIZE = 0
 #mutation adding scale factor
 EPSILON = 0.5
 
-DNA_SIZE = (BORDER**2+3)*HIDDEN_LAYER_NEURONS[0]
-for i in range(len(HIDDEN_LAYER_NEURONS)-1):
-    DNA_SIZE += HIDDEN_LAYER_NEURONS[i]*HIDDEN_LAYER_NEURONS[i+1]
-DNA_SIZE += HIDDEN_LAYER_NEURONS[-1]*N_CLASS
 #how many wight are changed
 MUTATION_RATE = 0.1
 
@@ -38,7 +30,7 @@ MUTATION_PROBABILITY = 1
 #how many turns a snake survives without eating
 MAX_LIFE_WITHOUT_FOOD = BORDER**2 / 2
 #scala distri
-UNIFORMSIZE = 3
+UNIFORMSIZE = 7
 #max fitness 
 MAX_FITNESS = 18
 
