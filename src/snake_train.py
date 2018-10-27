@@ -10,6 +10,7 @@ if __name__ == "__main__":
     input_type = input.PointOfView()
     fitness = []
     topfitness = []
+    variancevec = []
     plt.figure(figsize=(10, 10))
     simulation = simulation.Simulation(
         input_type, n_snakes=conf.N_SNAKE, visible=True)
@@ -24,9 +25,11 @@ if __name__ == "__main__":
         print("\tmean fitness: %.3f, fitness variance: %.3f, top_mean_fitness %.3f, avg_parent %.3f [max: %.3f, min: %.3f, iterations: %d]" % (
             meanfit, variance, top_mean, Average_parent,  maxfit, minfit, ret))
         fitness.append(meanfit)
+        variancevec.append(variance)
         topfitness.append(top_mean)
-    plt.plot(np.array(fitness), c="pink")
+    plt.plot(np.array(fitness), c="red")
     plt.plot(np.array(topfitness), c="pink")
+    plt.plot(np.array(variancevec), c = "yellow")
 
     plt.show()
     

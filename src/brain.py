@@ -2,7 +2,6 @@ import random
 import numpy as np
 from activation_functions import sigmoid, softmax, relu
 import conf 
-import pandas as pd
 import json
 import os
 
