@@ -29,7 +29,6 @@ To see if it pygame works, run one of the included examples:
 
 ```
 python3 -m pygame.examples.aliens
-
 ```
 
 ## Running the tests
@@ -40,7 +39,6 @@ Now you are ready to run the example we made.
 ```
 cd src
 python3 snake_train.py
-
 ```
 Now you will train the snakes. You can see the snakes which had the better fitness on the previus generation (they will be still alive)
 and the statistics of the generation. 
