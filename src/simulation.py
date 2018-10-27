@@ -119,12 +119,17 @@ class Simulation:
         fit = 0
         fit_top = 0
         average_distribution = 0
+        for i in self.geneticSnakes[: self.n_snakes - conf.N_CROSS]:
+            fit += i.fitness
         for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
             fit_top += i.fitness
-        
+        mean = (fit + fit_top)/self.n_snakes
+        variance = 0 
+        for i in self.geneticSnakes:
+            variance += (i.fitness - mean)**2
+        variance = variance/self.n_snakes
         # 1. new snakes (with mutation)
         for i in self.geneticSnakes[:self.n_snakes - conf.N_SNAKE_SURVIVING]:
-            fit += i.fitness
             rnd = random.random()
             if rnd > (conf.MUTATION_PROBABILITY / fit_top ** 2):
                 random_index0 = random_array(fit_array)
@@ -142,14 +147,11 @@ class Simulation:
             i.clear()
         # 2. snakes that survive to the next generation
         # 2.1 snakes that are not used for crossover
-        for i in self.geneticSnakes[-conf.N_SNAKE_SURVIVING: self.n_snakes-conf.N_CROSS]:
-            fit += i.fitness
-            i.clear()
-        for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
+        for i in self.geneticSnakes[self.n_snakes - conf.N_SNAKE_SURVIVING:]:
             i.clear()
         # 2.2 snakes with highest fitness that are used for crossover 
 
-        return (fit + fit_top)/self.n_snakes, (fit_top/N), (average_distribution/(self.n_snakes- conf.N_SNAKE_SURVIVING)), max_fit, min_fit, self.iteration
+        return mean, variance,  (fit_top/N), (average_distribution/(self.n_snakes- conf.N_SNAKE_SURVIVING)), max_fit, min_fit, self.iteration
 
     def showBestN(self, N=10): 
         self.field.view()
