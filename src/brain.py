@@ -50,7 +50,7 @@ class Brain:
         self.DNA = new_DNA
 
     def crossDNA(self, parent0, parent1):
-        split_dim = random.randint(2, 5)
+        split_dim = random.randint(2, 10)
         newDNA = np.zeros_like(parent0.DNA)
         for i in range(0, len(newDNA), 2 * split_dim):
             newDNA[i : i + split_dim] = parent0.DNA[i : i + split_dim]
