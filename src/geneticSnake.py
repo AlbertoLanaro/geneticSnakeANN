@@ -53,7 +53,7 @@ class GeneticSnake:
                 self.is_dead = True
             # snake found food
             elif curr_reward == 1:
-                self.expositionn = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
+                self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
                 self.fitness += curr_reward
                 self.count = conf.MAX_LIFE_WITHOUT_FOOD
 

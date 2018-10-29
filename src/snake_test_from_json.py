@@ -7,7 +7,6 @@ import sys
 import json
 import input
 
-
 if __name__ == "__main__":
     input_type = input.PointOfView()
     if len(sys.argv) == 1:
