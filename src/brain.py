@@ -4,6 +4,7 @@ from activation_functions import sigmoid, softmax, relu
 import conf 
 import json
 import os
+import copy
 
 # brain parameters
 HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
@@ -36,25 +37,31 @@ class Brain:
     def mutate(self):
         new_DNA = []
         for syn in self.DNA:
+            section = []
             for s in range(len(syn)):
                 p = random.random()
                 if conf.EPSILON > 7:
                     if p < conf.MUTATION_RATE:
                         # not perturbate but initialize new neuron
-                        syn[s] = conf.UNIFORMSIZE * (2*random.random() - 1)
+                        section.append(conf.UNIFORMSIZE * (2*random.random() - 1))
+                    else:
+                        section.append(syn[s])
                 else:
                     if p < conf.MUTATION_RATE:
-                        # perturbate the correspondent neuron
-                        syn[s] = syn[s] + conf.EPSILON * (2*random.random() - 1)
-            new_DNA.append(syn)
+                        app = syn[s]
+                        app = app + conf.EPSILON * (2*random.random() - 1)
+                        section.append(app)
+                    else:
+                        section.append(syn[s])
+            new_DNA.append(np.array(section))
         self.DNA = new_DNA
 
     def crossDNA(self, parent0, parent1):
         split_dim = random.randint(2, 10)
-        newDNA = np.zeros_like(parent0.DNA)
-        for i in range(0, len(newDNA), 2 * split_dim):
-            newDNA[i : i + split_dim] = parent0.DNA[i : i + split_dim]
-            newDNA[i + split_dim : i + 2 * split_dim] = parent1.DNA[i + split_dim : i + 2 * split_dim]
+        newDNA = copy.deepcopy(parent0.DNA)
+        for i in range(len(newDNA)):
+            for j in range(0, len(newDNA[i]),2* split_dim):
+                newDNA[i][j + split_dim: j + 2 *split_dim] = parent1.DNA[i][j + split_dim: j + 2*split_dim]
         self.DNA = newDNA
 
     def crossDNAAndMutate(self, parent0, parent1):

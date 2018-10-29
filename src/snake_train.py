@@ -5,9 +5,9 @@ import conf
 import input
  
 
-SHOW = 10
+SHOW = 3
 if __name__ == "__main__":
-    input_type = input.PointOfViewUpgraded()
+    input_type = input.PointOfView()
     fitness = []
     topfitness = []
     variancevec = []

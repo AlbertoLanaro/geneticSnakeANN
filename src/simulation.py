@@ -131,7 +131,7 @@ class Simulation:
         # 1. new snakes (with mutation)
         for i in self.geneticSnakes[:self.n_snakes - conf.N_SNAKE_SURVIVING]:
             rnd = random.random()
-            if rnd > (conf.MUTATION_PROBABILITY / fit_top ** 2):
+            if rnd > (conf.MUTATION_PROBABILITY):
                 random_index0 = random_array(fit_array)
                 random_index1 = random_array(fit_array)
                 average_distribution += self.geneticSnakes[random_index1].fitness
