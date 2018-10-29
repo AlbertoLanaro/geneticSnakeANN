@@ -5,9 +5,9 @@ import conf
 import input
  
 
-SHOW = 6
+SHOW = 10
 if __name__ == "__main__":
-    input_type = input.PointOfView()
+    input_type = input.PointOfViewUpgraded()
     fitness = []
     topfitness = []
     variancevec = []
@@ -16,6 +16,8 @@ if __name__ == "__main__":
     simulation = simulation.Simulation(
         input_type, n_snakes=conf.N_SNAKE, visible=True)
     simulation.showBestN(N=SHOW)
+    variance = 0
+    Average_parent = 0
     #geneticSnakeGame = geneticControl.GeneticControl(visible=True, n_snakes=conf.N_SNAKE)
     for i in range(conf.ITERATION):
         print("@ generation "+str(i))
