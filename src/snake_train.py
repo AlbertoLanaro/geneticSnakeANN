@@ -12,6 +12,7 @@ if __name__ == "__main__":
     topfitness = []
     variancevec = []
     plt.figure(figsize=(10, 10))
+    plt.title("Fitness")
     simulation = simulation.Simulation(
         input_type, n_snakes=conf.N_SNAKE, visible=True)
     simulation.showBestN(N=SHOW)
@@ -31,5 +32,6 @@ if __name__ == "__main__":
     plt.plot(np.array(topfitness), c="pink")
     plt.plot(np.array(variancevec), c = "yellow")
 
+    plt.legend(["avg. fitness", "avg. top fitness"])
     plt.show()
     

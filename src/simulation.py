@@ -10,10 +10,9 @@ import time
 N = conf.N_CROSS
 
 class Simulation:
-    def __init__(self, input_type, n_snakes=1000, visible=False, timer = 0):
-        # field of the current generation
-
+    def __init__(self, input_type, n_snakes=1000, visible=False, timer = None):
         self.timer = timer
+        # field of the current generation
         self.field = field.Field(visible)
         self.iteration = 0
         self.n_snakes = n_snakes
@@ -41,6 +40,7 @@ class Simulation:
             #print("dead snake: ", self.death_counter)
             
         self.death_counter = 0
+
     '''
     Simulation end is triggered by the death of one or more snakes
     or timer ending
@@ -53,15 +53,18 @@ class Simulation:
             #print("dead snake: ", self.death_counter)
 
         self.death_counter = 0
+
     '''
     Sort the list of geneticSnake from lower to higher fitness
     '''
     def sortSnakesForFitness(self):
         self.geneticSnakes.sort(key=lambda x: x.fitness)
 
-    # This function improves the natural selection
-    # We take the second half of the simulation sorted by fitness
-    # and change their DNA with the DNA of the better snakes
+    '''
+    This function improves the natural selection
+    We take the second half of the simulation sorted by fitness
+    and change their DNA with the DNA of the better snakes
+    '''
     def upgradeGeneration(self ):
         # sort for fitness
         self.sortSnakesForFitness()
@@ -152,7 +155,10 @@ class Simulation:
         # 2.2 snakes with highest fitness that are used for crossover 
 
         return mean, variance,  (fit_top/N), (average_distribution/(self.n_snakes- conf.N_SNAKE_SURVIVING)), max_fit, min_fit, self.iteration
-
+        
+    '''
+    Shows the snake with higher fitness
+    '''
     def showBestN(self, N=10): 
         self.field.view()
         self.sortSnakesForFitness()
