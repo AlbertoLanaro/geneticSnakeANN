@@ -59,6 +59,7 @@ class Snake:
         self.body = [[randint(1, conf.BORDER - 1), randint(1, conf.BORDER - 1)]]
         self.score = 0 # inital score value
         self.curr_dir = randint(0, 3)  # previous direction
+        self.lastturn = [-1,1,-1]
         self.is_dead = False # flag to indicate if the snake is dead
         self.createFood()
 
@@ -90,6 +91,16 @@ class Snake:
     #4)eventually delete the tail
     #5)draw the snake and the food
     def update(self, fld, direction):
+        exdir = self.curr_dir
+        #we store the last three direction changes
+        if exdir != direction:
+            self.lastturn = self.lastturn[:2]
+            turn = direction - exdir
+            if turn == 3:
+                turn = -1
+            elif turn == -3:
+                turn = 1
+            self.lastturn.append(turn)
         self.curr_dir = direction
         self.timer += 1
         self.body.insert(0, [self.body[0][0] + (direction == 1 and 1) +

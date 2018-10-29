@@ -97,6 +97,49 @@ class PointOfView:
         input.append(wherefood[3])
         return input
 
+#1) We add the last three direction changes and improove the field viewed
+#turn right 1, left -1
+class PointOfViewUpgraded:
+    def __init__(self):
+        self.size = 13
+        conf.INPUT_SIZE = 13
+
+    def getInput(self, snake):
+        possible_direction = snake.getNextPossibleDir()
+        input = []
+        # what snake sees in his 3 cross directions
+        head = snake.body[0]
+        next_left = [head[0] + (possible_direction[0] == 1 and 1) + (possible_direction[0] == 3 and -1),
+                     head[1] + (possible_direction[0] == 2 and 1) + (possible_direction[0] == 0 and -1)]
+        nextnext_left = [next_left[0] + (possible_direction[0] == 1 and 1) + (possible_direction[0] == 3 and -1),
+                         next_left[1] + (possible_direction[0] == 2 and 1) + (possible_direction[0] == 0 and -1)]
+        next_right = [head[0] + (possible_direction[2] == 1 and 1) + (possible_direction[2] == 3 and -1),
+                      head[1] + (possible_direction[2] == 2 and 1) + (possible_direction[2] == 0 and -1)]
+        nextnext_right = [next_right[0] + (possible_direction[2] == 1 and 1) + (possible_direction[2] == 3 and -1),
+                          next_right[1] + (possible_direction[2] == 2 and 1) + (possible_direction[2] == 0 and -1)]
+        next_straight = [head[0] + (possible_direction[1] == 1 and 1) +
+                         (possible_direction[1] == 3 and -1), head[1] +
+                         (possible_direction[1] == 2 and 1) + (possible_direction[1] == 0 and -1)]
+        nextnext_straight = [next_straight[0] + (possible_direction[1] == 1 and 1) +
+                             (possible_direction[1] == 3 and -1), next_straight[1] +
+                         (possible_direction[1] == 2 and 1) + (possible_direction[1] == 0 and -1)]
+        
+        input.append(snake.mapPoint(next_left))
+        input.append(snake.mapPoint(next_right))
+        input.append(snake.mapPoint(next_straight))
+        input.append(snake.mapPoint(nextnext_left))
+        input.append(snake.mapPoint(nextnext_right))
+        input.append(snake.mapPoint(nextnext_straight))
+        input.append(snake.lastturn[0])
+        input.append(snake.lastturn[1])
+        input.append(snake.lastturn[2])
+        wherefood = findFood(snake.food, head, snake.curr_dir)
+        input.append(wherefood[0])
+        input.append(wherefood[1])
+        input.append(wherefood[2])
+        input.append(wherefood[3])
+        return input
+
 
 
 #map the food position for the snake. It changes for each direction.

@@ -112,7 +112,7 @@ class Simulation:
         # Creating the fitnesses vector
         fit_array = []
         for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
-            fit_array.append(int(np.exp(i.fitness)))
+            fit_array.append(i.fitness**2)
         fit_array = np.cumsum(np.array(fit_array))
         # Taking the (n_snakes - N_SNAKE_SURVIVING) worst snakes and 
         # substitute them with other reproduced from the better snakes
