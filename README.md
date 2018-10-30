@@ -62,6 +62,9 @@ Here we present an example of how a trained snake performs playing in a borderle
 
 ![](https://github.com/AlbertoLanaro/geneticSnakeANN/blob/lanarodev/doc/single_no_borders.gif?raw=true)
 
+## Future Works
+In order to achieve better performance we are investigating different input types and different ANN setups. One of the possible next steps is to introduce a more complex model for the snake brain such as a LSTM network (in order to capture the sequentiality of the events) or a CNN.
+
 ## Authors
 
 * **Alberto Lanaro**  - [AlbertoLanaro](https://github.com/AlbertoLanaro)
