@@ -107,18 +107,16 @@ class Simulation:
         # 1. new snakes (with probable mutation)
         for i in self.geneticSnakes[:self.n_snakes - conf.N_SNAKE_SURVIVING]:
             rnd = random.random()
+            # partents sampling
+            random_index0 = random_sampling(fit_array_cdf)
+            random_index1 = random_sampling(fit_array_cdf)
+            # update parents' fitness value
+            parents_fitness += self.geneticSnakes[random_index1].fitness
             # do not mutate DNA
             if rnd > conf.MUTATION_PROBABILITY:
-                random_index0 = random_sampling(fit_array_cdf)
-                random_index1 = random_sampling(fit_array_cdf)
-                parents_fitness += self.geneticSnakes[random_index1].fitness
                 i.brain.crossDNA(self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain)
             # possibly mutate DNA
             else: 
-                random_index0 = random_sampling(fit_array_cdf)
-                random_index1 = random_sampling(fit_array_cdf)
-                value = self.geneticSnakes[random_index1].fitness
-                parents_fitness += value
                 i.brain.crossDNAAndMutate(self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain, p_mutation)
             i.clear()
         # 2. snakes that survive to the next generation
