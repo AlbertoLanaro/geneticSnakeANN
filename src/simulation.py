@@ -61,41 +61,6 @@ class Simulation:
         self.geneticSnakes.sort(key=lambda x: x.fitness)
 
     '''
-    This function improves the natural selection
-    We take the second half of the simulation sorted by fitness
-    and change their DNA with the DNA of the better snakes
-    '''
-    def upgradeGeneration(self ):
-        # sort for fitness
-        self.sortSnakesForFitness()
-        max_fit = self.geneticSnakes[-1].fitness
-        if max_fit > conf.MAX_FITNESS:
-            self.geneticSnakes[-1].brain.DNAsave(max_fit)
-            conf.MAX_FITNESS = max_fit
-        min_fit = self.geneticSnakes[0].fitness
-        #topfitness = self.geneticSnakes[-1].fitness
-        # Taking the first half and then reproduce them 
-        fit = 0
-        fit_top = 0 
-        for i in self.geneticSnakes[:self.n_snakes - conf.N_SNAKE_SURVIVING]:
-            fit += i.fitness
-            rnd = random.random()
-            if rnd > conf.MUTATION_PROBABILITY:
-                i.brain.crossDNA(self.geneticSnakes[random.randint(
-                    self.n_snakes - conf.N_CROSS, self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes - conf.N_CROSS, self.n_snakes - 1)].brain)
-            else:
-                i.brain.crossDNAAndMutate(self.geneticSnakes[random.randint(
-                    self.n_snakes- conf.N_CROSS, self.n_snakes - 1)].brain, self.geneticSnakes[random.randint(self.n_snakes- conf.N_CROSS, self.n_snakes - 1)].brain)
-            i.clear()
-        for i in self.geneticSnakes[-conf.N_SNAKE_SURVIVING : self.n_snakes-conf.N_CROSS]:
-            fit += i.fitness
-            i.clear()
-        for i in self.geneticSnakes[self.n_snakes - conf.N_CROSS:]:
-            fit_top += i.fitness
-            i.clear()
-        return (fit + fit_top)/self.n_snakes, (fit_top/N), max_fit, min_fit, self.iteration
-
-    '''
     Function that upgrate generation with a different distribution of parents
     It choose the parents with higher fitness with more prbability
     We   1)choose the N parents best parents of the simulation
