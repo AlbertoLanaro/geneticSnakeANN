@@ -33,18 +33,19 @@ class Brain:
             # create brain from DNA
             self.DNA = DNA
     
-    def mutate(self):
+    def mutate(self, p_mutation):
         new_DNA = []
         for syn in self.DNA:
             for s in range(len(syn)):
                 p = random.random()
+                # completely change neuron value
                 if conf.EPSILON > 7:
-                    if p < conf.MUTATION_RATE:
+                    if p < p_mutation:
                         # not perturbate but initialize new neuron
                         syn[s] = conf.UNIFORMSIZE * (2*random.random() - 1)
                 else:
-                    if p < conf.MUTATION_RATE:
-                        # perturbate the correspondent neuron
+                # perturbate the correspondent neuron
+                    if p < p_mutation:
                         syn[s] = syn[s] + conf.EPSILON * (2*random.random() - 1)
             new_DNA.append(syn)
         self.DNA = new_DNA
@@ -57,9 +58,9 @@ class Brain:
             newDNA[i + split_dim : i + 2 * split_dim] = parent1.DNA[i + split_dim : i + 2 * split_dim]
         self.DNA = newDNA
 
-    def crossDNAAndMutate(self, parent0, parent1):
+    def crossDNAAndMutate(self, parent0, parent1, p_mutation=0.0):
         self.crossDNA(parent0, parent1)
-        self.mutate()
+        self.mutate(p_mutation=p_mutation)
 
     def predictOutput(self, input):
         # input layer
