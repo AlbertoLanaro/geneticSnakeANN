@@ -18,7 +18,7 @@ class Field:
 
     def update(self):
         if self.visible:
-            _ = pygame.event.wait()
+            pygame.event.pump()
             self.field.fill(BLACK)
 
     def view(self):

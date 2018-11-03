@@ -64,15 +64,14 @@ class Snake:
         self.createFood()
 
     def createFood(self):
-        self.food = [randint(2, conf.BORDER - 2), randint(2, conf.BORDER - 2)]
+        self.food = [randint(1, conf.BORDER - 1), randint(1, conf.BORDER - 1)]
 		# food must not be in the same position of the snake
         while(self.foodOnSnake() == True):
-            self.food = [randint(2, conf.BORDER - 2), randint(2, conf.BORDER - 2)]
+            self.food = [randint(1, conf.BORDER - 1), randint(1, conf.BORDER - 1)]
 
     def foodOnSnake(self):
-        for i in self.body:
-            if i == self.food:
-                return True
+        if self.body[0] == self.food:
+            return True
         return False
 
     def getCurrDir(self):
