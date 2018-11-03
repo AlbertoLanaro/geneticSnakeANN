@@ -117,7 +117,8 @@ class Simulation:
                 i.brain.crossDNA(self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain)
             # possibly mutate DNA
             else: 
-                i.brain.crossDNAAndMutate(self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain, p_mutation)
+                i.brain.crossDNAAndMutate(
+                    self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain, conf.MUTATION_RATE)
             i.clear()
         # 2. snakes that survive to the next generation
         for i in self.geneticSnakes[self.n_snakes - conf.N_SNAKE_SURVIVING:]:

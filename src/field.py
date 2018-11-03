@@ -2,6 +2,12 @@ import pygame
 from colors import WHITE
 from colors import BLACK
 import conf
+import sys
+import signal
+
+
+
+
 
 class Field:
     SCALE = 30

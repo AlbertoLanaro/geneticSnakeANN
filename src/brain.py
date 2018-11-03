@@ -20,7 +20,7 @@ class Brain:
     def __init__(self, input_len, DNA = None, reproduced = False, parent0 = None, parent1 = None):
         if reproduced:
             self.crossDNA(parent0, parent1)
-            self.mutate()
+            self.mutate(conf.MUTATION_PROBABILITY)
         elif DNA == None:
             # create random brain synapsis
             # first layer
