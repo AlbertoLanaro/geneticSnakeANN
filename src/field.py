@@ -13,8 +13,8 @@ class Field:
         if visible:
             # set simulation update timer
             pygame.time.set_timer(1, self.TIMER)
-        self.field = pygame.display.set_mode((Field.N * Field.SCALE, Field.N * Field.SCALE))
-        self.field.fill(BLACK)
+            self.field = pygame.display.set_mode((Field.N * Field.SCALE, Field.N * Field.SCALE))
+            self.field.fill(BLACK)
 
     def update(self):
         if self.visible:
