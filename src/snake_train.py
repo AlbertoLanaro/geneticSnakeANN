@@ -33,6 +33,8 @@ if __name__ == "__main__":
     input_type = input.PointOfViewUpgraded()
     plt.figure(figsize=(10, 10))
     simulation = simulation.Simulation(input_type, n_snakes=conf.N_SNAKE, visible=conf.VISIBLE)
+    if conf.FROMFILE:
+        simulation.InitDNAFromDNA()
     if conf.VISIBLE:
         simulation.showBestN(N=SHOW)
     for i in range(conf.ITERATION):

@@ -7,6 +7,9 @@ import conf
 import numpy as np
 import time
 import scipy.stats as st
+import json
+import glob
+import os
 
 N = conf.N_CROSS
 
@@ -104,6 +107,7 @@ class Simulation:
         # Increase mutation rate if we are stuck in some local maximum
         if np.abs(self.last_mean_val - mean_top_fit) < 0.3:
             p_mutation = conf.MUTATION_RATE
+        p_mutation = conf.MUTATION_RATE
         self.last_mean_val = mean_top_fit
         
         # Taking the (n_snakes - N_SNAKE_SURVIVING) worst snakes and 
@@ -164,6 +168,37 @@ class Simulation:
             pygame.display.flip()
         if self.timer:
             time.sleep(self.timer)
+    
+
+    '''function that init the DNA from the DNA stored on DNA/DNA_1
+    The DNA are chosen in this way: given N files on DNA/DNA_1 we make 2N snake with these dna
+    then we reproduce them '''
+    def InitDNAFromDNA(self):
+        #create the DNA vector from file
+        StartDNAArray = []
+        os.chdir("./DNA/DNA_1/")
+        for file in glob.glob("./*.json"):
+            print(file)
+            with open(file) as f:
+                data = json.load(f)
+                DNA = data["DNA"]
+                npDNA = []
+                for i in DNA:
+                    npDNA.append(np.array(i))
+                StartDNAArray.append(npDNA)
+        os.chdir("../../")
+
+        NumberDNA = len(StartDNAArray)            
+        for i in range(2*NumberDNA):
+            self.geneticSnakes[i].brain.DNA = StartDNAArray[i % NumberDNA]
+        for i in range(2*NumberDNA, len(self.geneticSnakes)):
+            random_index0 = random.randint(0, NumberDNA)
+            random_index1 = random.randint(0,  NumberDNA)
+            while random_index0 == random_index1:
+                random_index1 = random.randint(0,  NumberDNA)
+            self.geneticSnakes[i].brain.crossDNAAndMutate(self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain, conf.MUTATION_RATE)
+
+
 '''
 Utility function 
 given a sorted array it gives a random index. 
@@ -179,6 +214,7 @@ def random_sampling(fit_array):
         if rnd > fit_array[-i-1]:
             return -i
         i += 1
+
 
 def print_conf():
     print("----------------- [SIMULATION CONFIGURATION] -----------------")

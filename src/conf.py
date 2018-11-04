@@ -31,4 +31,7 @@ UNIFORMSIZE = 7
 MAX_FITNESS = 25
 # visualize the training process
 VISIBLE = False
+#If we start the simulation from a pull of DNA 
+FROMFILE = False
+#path where the DNA are stored
 DNA_PATH = "./DNA/DNA_1"
