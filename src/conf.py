@@ -1,6 +1,6 @@
 import datetime
 
-HIDDEN_LAYER_NEURONS = [5]
+HIDDEN_LAYER_NEURONS = [10]
 # number of snakes used in each generation
 N_SNAKE = 1000
 # simulate until N_DEATH deaths
@@ -20,9 +20,9 @@ ITERATION = 500
 #snake mutation probability
 MUTATION_PROBABILITY = 1.0
 #DNA mutation probability
-MUTATION_RATE = 0.2
+MUTATION_RATE = 0.1
 #mutation adding scale factor
-EPSILON = 3
+EPSILON = 2
 #how many turns a snake survives without eating
 MAX_LIFE_WITHOUT_FOOD = BORDER*8
 #scalar distri
