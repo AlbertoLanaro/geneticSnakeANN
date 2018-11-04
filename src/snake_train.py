@@ -13,7 +13,11 @@ import input
 def signal_handler(sig, frame):
      # plot results
     plt.plot(np.array(top_fit_mean_vec), c="red")
+    plt.plot(np.array(top_fit_mean_vec), c="red")
+    plt.fill_between(range(len(top_fit_mean_CIlow_vec)),top_fit_mean_CIlow_vec, top_fit_mean_CIup_vec, alpha=0.4)
+    plt.xlabel("generation")
     plt.legend(["avg. top fitness", str("95%") + " CI"])
+    plt.savefig('./fitness.png', bbox_inches='tight')
     plt.show()
     sys.exit(0)
 
@@ -31,9 +35,6 @@ if __name__ == "__main__":
     simulation = simulation.Simulation(input_type, n_snakes=conf.N_SNAKE, visible=conf.VISIBLE)
     if conf.VISIBLE:
         simulation.showBestN(N=SHOW)
-    top_fit_mean_vec = []
-    top_fit_mean_CIlow_vec = []
-    top_fit_mean_CIup_vec = []
     for i in range(conf.ITERATION):
         start_time = time.time()
         print("[" + datetime.datetime.today().strftime("%H:%M.%S")  + "] " + "------------------------------ GENERATION " + str(i) + " ------------------------------")

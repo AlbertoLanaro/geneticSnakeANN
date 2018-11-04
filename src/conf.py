@@ -2,7 +2,7 @@ import datetime
 
 HIDDEN_LAYER_NEURONS = [5]
 # number of snakes used in each generation
-N_SNAKE = 10000
+N_SNAKE = 1000
 # simulate until N_DEATH deaths
 N_DEATH = int(1 * N_SNAKE)
 # select best N_CROSS snakes
@@ -16,7 +16,7 @@ BORDER = 8
 #if border are dangerous
 BORDER_BOOL = True
 INPUT_SIZE = 0
-ITERATION = 1000
+ITERATION = 500
 #snake mutation probability
 MUTATION_PROBABILITY = 1.0
 #DNA mutation probability
