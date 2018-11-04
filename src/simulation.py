@@ -19,8 +19,8 @@ class Simulation:
         self.n_snakes = n_snakes
         self.death_counter = 0
         # list of snake created for the current simulation
-        self.geneticSnakes = [geneticSnake.GeneticSnake(
-            self.field, input_type, visible=visible) for _ in range(n_snakes)]
+        self.geneticSnakes = [geneticSnake.GeneticSnake(self.field, input_type, visible=visible) for _ in range(n_snakes)]
+        self.last_mean_val = 0.0
 
     '''
     Simulation duration is set to "turn" iteration
@@ -100,7 +100,11 @@ class Simulation:
         top_fit_CI = st.t.interval(0.95, len(fit_top)-1, loc=mean_top_fit, scale=st.sem(fit_top))
 
         # DNA mutation probability
-        p_mutation = min(conf.MUTATION_RATE, conf.MUTATION_RATE / (mean_top_fit))
+        p_mutation = min(conf.MUTATION_RATE, conf.MUTATION_RATE / np.sqrt(mean_fit))
+        # Increase mutation rate if we are stuck in some local maximum
+        if np.abs(self.last_mean_val - mean_top_fit) < 0.3:
+            p_mutation = conf.MUTATION_RATE
+        self.last_mean_val = mean_top_fit
         
         # Taking the (n_snakes - N_SNAKE_SURVIVING) worst snakes and 
         # substitute them with other reproduced from the best snakes
@@ -110,8 +114,10 @@ class Simulation:
             # partents sampling
             random_index0 = random_sampling(fit_array_cdf)
             random_index1 = random_sampling(fit_array_cdf)
+            while random_index1 == random_index0:
+                random_index1 = random_sampling(fit_array_cdf)
             # update parents' fitness value
-            parents_fitness += self.geneticSnakes[random_index1].fitness
+            parents_fitness += (0.5 * (self.geneticSnakes[random_index1].fitness + self.geneticSnakes[random_index0].fitness))
             # do not mutate DNA
             if rnd > conf.MUTATION_PROBABILITY:
                 i.brain.crossDNA(self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain)
@@ -173,3 +179,16 @@ def random_sampling(fit_array):
         if rnd > fit_array[-i-1]:
             return -i
         i += 1
+
+def print_conf():
+    print("----------------- [SIMULATION CONFIGURATION] -----------------")
+    print("Number of snakes: ", conf.N_SNAKE)
+    print("\tsurviving: %d" % conf.N_SNAKE_SURVIVING)
+    print("\tused for crossover: %d" % conf.N_CROSS)
+    print("Mutation prob: %.2f" % conf.MUTATION_PROBABILITY)
+    print("Mutation rate: %.3f" % conf.MUTATION_RATE)
+    print("ANN structure: ", conf.HIDDEN_LAYER_NEURONS)
+    print("Iteration: ", conf.ITERATION)
+    print("Field size:", conf.BORDER)
+    print("Border enabled:", conf.BORDER_BOOL)
+    print()
