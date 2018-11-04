@@ -3,7 +3,7 @@ import math
 
 class FieldAsInput:
     def __init__(self):
-        self.size = conf.BORDER ** 2 + 3
+        self.size = (conf.BORDER) **2 + 3
         conf.INPUT_SIZE = conf.BORDER ** 2 + 3
     
     def getInput(self, snake):
@@ -14,7 +14,7 @@ class FieldAsInput:
         norm_snake_head = [snake_head[0] /
                            conf.BORDER, snake_head[1] / conf.BORDER]
         curr_dir = (snake.getCurrDir() % 4) - 1
-        for i in range(1, conf.BORDER):
+        for i in range(conf.BORDER):
             for j in range(conf.BORDER):
                 if [i, j] == food:
                     input.append(1)

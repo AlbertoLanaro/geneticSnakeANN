@@ -45,16 +45,16 @@ import colors
 
 class Snake:
     def __init__(self, visible = False, color = None):
-        #graphics
-        self.cube = pygame.Surface((field.Field.SCALE, field.Field.SCALE))
         if color is not None:
             self.color = color
         else:
             self.color = colors.random()
-        self.cube.fill(self.color)
+        self.visible = visible
+        if visible:
+            self.cube = pygame.Surface((field.Field.SCALE, field.Field.SCALE))
+            self.cube.fill(self.color)
         self.timer = 0
         self.size = 1
-        self.visible = visible
 		#define head start
         self.body = [[randint(1, conf.BORDER - 1), randint(1, conf.BORDER - 1)]]
         self.score = 0 # inital score value
@@ -64,15 +64,14 @@ class Snake:
         self.createFood()
 
     def createFood(self):
-        self.food = [randint(2, conf.BORDER - 2), randint(2, conf.BORDER - 2)]
+        self.food = [randint(1, conf.BORDER - 1), randint(1, conf.BORDER - 1)]
 		# food must not be in the same position of the snake
         while(self.foodOnSnake() == True):
-            self.food = [randint(2, conf.BORDER - 2), randint(2, conf.BORDER - 2)]
+            self.food = [randint(1, conf.BORDER - 1), randint(1, conf.BORDER - 1)]
 
     def foodOnSnake(self):
-        for i in self.body:
-            if i == self.food:
-                return True
+        if self.body[0] == self.food:
+            return True
         return False
 
     def getCurrDir(self):
@@ -103,9 +102,7 @@ class Snake:
             self.lastturn.append(turn)
         self.curr_dir = direction
         self.timer += 1
-        self.body.insert(0, [self.body[0][0] + (direction == 1 and 1) +
-            (direction == 3 and -1), self.body[0][1] +
-            (direction == 2 and 1) + (direction == 0 and -1)])
+        self.body.insert(0, [self.body[0][0] + (direction == 1 and 1) + (direction == 3 and -1), self.body[0][1] + (direction == 2 and 1) + (direction == 0 and -1)])
 
         # check if snake hit borders
         if self.body[0] in self.body[1:]:
