@@ -1,4 +1,4 @@
-# Genetic Snake with ANN
+# Genetic Snake with ANN :snake:
 This project applies a genetic algorithm to the popular game "snake".
 Every snake is characterized by an ANN that predicts its future move: go straight, turn right, turn left.
 Right now we have implemented three type of inputs, which are described in [input.py](https://github.com/AlbertoLanaro/geneticSnakeANN/blob/master/src/input.py).
