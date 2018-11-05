@@ -15,7 +15,7 @@ all_colors = [BLACK, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA]
 # return a random color
 def random():
     # avoid to bright colors
-    max_bright = 240
-    c = [randint(0,max_bright), randint(0,max_bright), randint(0,max_bright)]
+    min_bright = 50
+    c = [randint(min_bright, 255), randint(min_bright, 255), randint(min_bright, 255)]
     
     return c

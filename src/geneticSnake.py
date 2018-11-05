@@ -6,18 +6,13 @@ import conf
 import math
 
 class GeneticSnake:
-    def __init__(self, fld, input_type, visible=False, DNA=None, reproduced=False, parent0=None, parent1=None):  #  TODO pass a DNA a BRAIN
+    def __init__(self, fld, input_type, visible=False):
         self.field = fld
         self.input = input_type
         # array used to detect if a snake is looping
         self.exposition = [[-1, -1], [-1, -1], [-1, -1], [-1, -1]]
         self.snake = snake.Snake(visible = visible)
-        if reproduced:
-            self.brain = brain.Brain(self.input.size, reproduced = True, parent0 = parent0, parent1 = parent1)
-        if DNA == None:
-            self.brain = brain.Brain(self.input.size)
-        else:
-            self.brain = brain.Brain(self.input.size, DNA = DNA)
+        self.brain = brain.Brain(self.input.size)
         self.fitness = 0
         # max number of steps the snake can take without eating anything
         self.count = conf.MAX_LIFE_WITHOUT_FOOD
