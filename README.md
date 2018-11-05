@@ -70,5 +70,5 @@ In order to achieve better performance we are investigating different input type
 
 ## Authors
 
-* **Alberto Lanaro**  - [AlbertoLanaro](https://github.com/AlbertoLanaro)
-* **Mario Bonsembiante**  - [MarioBonse](https://github.com/MarioBonse)
+* **Alberto Lanaro** :nerd_face: - [AlbertoLanaro](https://github.com/AlbertoLanaro)
+* **Mario Bonsembiante** :nerd_face: - [MarioBonse](https://github.com/MarioBonse)
