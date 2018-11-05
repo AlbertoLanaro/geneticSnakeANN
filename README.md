@@ -55,7 +55,7 @@ Below you can see an example of how the evolution process works. Generation by g
 ### Snake with Borders 
 Here we present an example of how a trained snake performs playing with the border mode turned on.
 
-![](https://github.com/AlbertoLanaro/geneticSnakeANN/blob/lanarodev/doc/single_border.gif?raw=true)
+![](https://github.com/AlbertoLanaro/geneticSnakeANN/blob/master/doc/single_border.gif)
 
 ### Snake without Borders
 Here we present an example of how a trained snake performs playing in a borderless environment.
