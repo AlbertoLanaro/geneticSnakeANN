@@ -48,9 +48,12 @@ As discussed above, we implemented different possible ANN's input types (see [in
 ## Results
 Here we present some of the results we obtained from the simulations. We show how the evolution process leads to snakes with higher fitness and how trained snakes behaves when tested alone.
 ### Evolution process
-Below you can see an example of how the evolution process works. Generation by generation, it can be seen how the snakes improve and understand how to survive longer in the game.
+Below you can see an example of how the evolution process works. As can be seen from the figure below, generation by generation, it can be seen how the snakes improve and understand how to survive longer in the game. 
+
+In this example, where the snakes were playing in a 8x8 field, after around 260 genereations they understood how to reach the maximum possible fitness of 64.
 
 ![](https://github.com/AlbertoLanaro/geneticSnakeANN/blob/lanarodev/doc/snake_evolution.gif?raw=true)
+![](https://github.com/AlbertoLanaro/geneticSnakeANN/blob/master/doc/fitness.png?raw=true)
 
 ### Snake with Borders 
 Here we present an example of how a trained snake performs playing with the border mode turned on.
