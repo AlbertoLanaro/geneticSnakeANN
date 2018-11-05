@@ -4,6 +4,7 @@ import time
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
+import os
 import conf
 import sys
 import signal
@@ -13,14 +14,12 @@ import input
 def signal_handler(sig, frame):
      # plot results
     plt.plot(np.array(top_fit_mean_vec), c="red")
-    plt.plot(np.array(top_fit_mean_vec), c="red")
     plt.fill_between(range(len(top_fit_mean_CIlow_vec)),top_fit_mean_CIlow_vec, top_fit_mean_CIup_vec, alpha=0.4)
     plt.xlabel("generation")
     plt.legend(["avg. top fitness", str("95%") + " CI"])
-    plt.savefig('./fitness.png', bbox_inches='tight')
+    plt.savefig(os.path.join(conf.DNA_PATH, "fitness.png"), bbox_inches="tight")
     plt.show()
     sys.exit(0)
-
 
 top_fit_mean_vec = []
 top_fit_mean_CIlow_vec = []
@@ -55,5 +54,5 @@ if __name__ == "__main__":
     plt.fill_between(range(conf.ITERATION), top_fit_mean_CIlow_vec, top_fit_mean_CIup_vec, alpha=0.4)
     plt.xlabel("generation")
     plt.legend(["avg. top fitness", str("95%") +  " CI"])
-    plt.savefig('./fitness.png', bbox_inches='tight')
+    plt.savefig(os.path.join(conf.DNA_PATH, "fitness.png"), bbox_inches='tight')
     plt.show()

@@ -176,28 +176,27 @@ class Simulation:
     def InitDNAFromDNA(self):
         #create the DNA vector from file
         StartDNAArray = []
-        os.chdir("./DNA/DNA_1/")
-        for file in glob.glob("./*.json"):
-            print(file)
+        json_path = os.path.join(conf.DNA_PATH, "*.json")
+        # load pre-saved DNA
+        print("Loading DNA(s):")
+        for file in glob.glob(json_path):
+            print("\t" + str(file))
             with open(file) as f:
                 data = json.load(f)
                 DNA = data["DNA"]
-                npDNA = []
-                for i in DNA:
-                    npDNA.append(np.array(i))
+                npDNA = [np.array(i) for i in DNA]
                 StartDNAArray.append(npDNA)
-        os.chdir("../../")
-
+        # create snakes with the loaded DNA
         NumberDNA = len(StartDNAArray)            
         for i in range(2*NumberDNA):
             self.geneticSnakes[i].brain.DNA = StartDNAArray[i % NumberDNA]
+        # cross-over + mutation with loaded DNA
         for i in range(2*NumberDNA, len(self.geneticSnakes)):
             random_index0 = random.randint(0, NumberDNA)
             random_index1 = random.randint(0,  NumberDNA)
             while random_index0 == random_index1:
                 random_index1 = random.randint(0,  NumberDNA)
             self.geneticSnakes[i].brain.crossDNAAndMutate(self.geneticSnakes[random_index0].brain, self.geneticSnakes[random_index1].brain, conf.MUTATION_RATE)
-
 
 '''
 Utility function 
@@ -227,4 +226,5 @@ def print_conf():
     print("Iteration: ", conf.ITERATION)
     print("Field size:", conf.BORDER)
     print("Border enabled:", conf.BORDER_BOOL)
+    print("DNA from file: ", conf.FROMFILE)
     print()

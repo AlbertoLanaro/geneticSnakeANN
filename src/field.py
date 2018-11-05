@@ -5,10 +5,6 @@ import conf
 import sys
 import signal
 
-
-
-
-
 class Field:
     SCALE = 30
     TIMER = 10  #  [ms]

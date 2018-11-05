@@ -303,7 +303,7 @@ def get_abs_left_view( snake, half = False):
 def get_abs_right_view( snake, half = False):
     snake_head = snake.getBodyPosition()[0]
     if half:
-        limit = int(conf.BORDER/2)
+        limit = conf.BORDER//2
     else:
         limit = conf.BORDER
     for i in range(1, limit -1 ):
