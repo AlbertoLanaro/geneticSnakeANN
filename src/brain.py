@@ -8,8 +8,6 @@ import copy
 import datetime
 
 # brain parameters
-HIDDEN_UNITS = conf.HIDDEN_LAYER_NEURONS # more hidden layers -> [6 10 10 ...]
-N_CLASS = conf.N_CLASS
 MAX_NEURON_VAL = 7.0
 
 # create folder to store json file of the best snakes
@@ -23,12 +21,12 @@ class Brain:
     def __init__(self, input_len):
         # create random brain synapsis
         # first layer
-        self.DNA = [ np.random.uniform(-MAX_NEURON_VAL, MAX_NEURON_VAL, input_len * HIDDEN_UNITS[0]) ]
+        self.DNA = [ np.random.uniform(-MAX_NEURON_VAL, MAX_NEURON_VAL, input_len * conf.HIDDEN_LAYER_NEURONS[0]) ]
         # hidden layers
-        for n in range(len(HIDDEN_UNITS) - 1):
-            self.DNA.append(np.random.uniform(-MAX_NEURON_VAL, MAX_NEURON_VAL, (HIDDEN_UNITS[n] * HIDDEN_UNITS[n+1])))
+        for n in range(len(conf.HIDDEN_LAYER_NEURONS) - 1):
+            self.DNA.append(np.random.uniform(-MAX_NEURON_VAL, MAX_NEURON_VAL, (conf.HIDDEN_LAYER_NEURONS[n] * conf.HIDDEN_LAYER_NEURONS[n+1])))
         # output layers
-        self.DNA.append(np.random.uniform(-MAX_NEURON_VAL, MAX_NEURON_VAL, HIDDEN_UNITS[-1] * N_CLASS))
+        self.DNA.append(np.random.uniform(-MAX_NEURON_VAL, MAX_NEURON_VAL, conf.HIDDEN_LAYER_NEURONS[-1] * conf.N_CLASS))
     
     # def mutate(self, p_mutation):
     #     for syn in self.DNA:
@@ -81,12 +79,12 @@ class Brain:
 
     def predictOutput(self, input):
         # input layer
-        l_tmp = sigmoid( np.dot(input, self.DNA[0].reshape([len(input), HIDDEN_UNITS[0]])) )
+        l_tmp = sigmoid( np.dot(input, self.DNA[0].reshape([len(input), conf.HIDDEN_LAYER_NEURONS[0]])) )
         # hidden layers
         for d in range(1, len(self.DNA) - 1):
-            l_tmp = sigmoid( np.dot(l_tmp, self.DNA[d].reshape([len(l_tmp), HIDDEN_UNITS[d]])))
+            l_tmp = sigmoid( np.dot(l_tmp, self.DNA[d].reshape([len(l_tmp), conf.HIDDEN_LAYER_NEURONS[d]])))
         # prediction layer
-        pred = softmax( np.dot(l_tmp, self.DNA[-1].reshape(len(l_tmp), N_CLASS)) )
+        pred = softmax( np.dot(l_tmp, self.DNA[-1].reshape(len(l_tmp), conf.N_CLASS)) )
         # prediction
         output = np.argmax(pred)
 
