@@ -44,7 +44,7 @@ python3 snake_test_from_json.py json/filename.json
 ```
 
 ## ANN Input Types
-As discussed above, we implemented different possible ANN's input types (see [input.py](https://github.com/AlbertoLanaro/geneticSnakeANN/blob/master/src/input.py)). The one that performs better is the one we called **PointOfView**. In this case, the input simply consists in what the snake sees around himself (1 if food, -1 if borders, -2 if body, 0 otherwise) and the encoded position of the food.
+As discussed above, we implemented different possible ANN's input types (see [input.py](https://github.com/AlbertoLanaro/geneticSnakeANN/blob/master/src/input.py)). The one that performs better is the one we called **PointOfViewUpgraded**. In this case, the input simply consists in what the snake sees around himself (1 if food, -1 if borders, -2 if body, 0 otherwise), the encoded position of the food and the last three change of direction that the snake did.
 ## Results
 Here we present some of the results we obtained from the simulations. We show how the evolution process leads to snakes with higher fitness and how trained snakes behaves when tested alone.
 ### Evolution process
