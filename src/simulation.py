@@ -79,7 +79,7 @@ class Simulation:
         max_fit = self.geneticSnakes[-1].fitness
         min_fit = self.geneticSnakes[0].fitness
         # store snake's DNA
-        if max_fit > conf.MAX_FITNESS:
+        if max_fit >= conf.MAX_FITNESS:
             self.geneticSnakes[-1].brain.DNAsave(max_fit)
             conf.MAX_FITNESS = max_fit
         # Creating the fitnesses cumulative density function
@@ -186,6 +186,9 @@ class Simulation:
                 for i in DNA:
                     npDNA.append(np.array(i))
                 StartDNAArray.append(npDNA)
+        if glob.glob("./*.json") is None:
+            print("Error, file not found")
+            return 1
         os.chdir("../../")
 
         NumberDNA = len(StartDNAArray)            

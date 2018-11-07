@@ -1,4 +1,5 @@
 import conf
+import colors
 
 '''
 Create the world with borders and food coordinates
@@ -51,6 +52,8 @@ class Snake:
             self.color = colors.random()
         self.visible = visible
         if visible:
+            self.foodcube = pygame.Surface((field.Field.SCALE, field.Field.SCALE))
+            self.foodcube.fill(colors.random())
             self.cube = pygame.Surface((field.Field.SCALE, field.Field.SCALE))
             self.cube.fill(self.color)
         self.timer = 0
@@ -70,7 +73,7 @@ class Snake:
             self.food = [randint(1, conf.BORDER - 1), randint(1, conf.BORDER - 1)]
 
     def foodOnSnake(self):
-        if self.body[0] == self.food:
+        if self.food in self.body:
             return True
         return False
 
@@ -143,7 +146,7 @@ class Snake:
     def show(self, fld):
         for bit in self.body:
             fld.blit(self.cube, (bit[0] * field.Field.SCALE, bit[1] * field.Field.SCALE))
-        fld.blit(self.cube, (self.food[0] * field.Field.SCALE, self.food[1] * field.Field.SCALE))
+        fld.blit(self.foodcube, (self.food[0] * field.Field.SCALE, self.food[1] * field.Field.SCALE))
 
     #manage the snakes visibility
     def view(self):
