@@ -26,7 +26,7 @@ if __name__ == "__main__":
                 npDNA.append(np.array(i))
             j = 0
             simulation = simulation.Simulation(
-                input_type, visible=True, n_snakes=1, timer=0.01)
+                input_type, visible=True, n_snakes=1, timer=0.05)
             simulation.geneticSnakes[0].brain.DNA = npDNA
             simulation.simulateUntilDeath(1)
             print(simulation.geneticSnakes[0].fitness)
