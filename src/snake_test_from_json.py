@@ -1,3 +1,4 @@
+#!../venv/bin/python3
 import simulation
 import field
 import matplotlib.pyplot as plt

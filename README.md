@@ -16,17 +16,22 @@ How to run the self learning game:
 
 ### Prerequisites
 
-You will need python 3.5+ with numpy, pygame, scipy and matplotlib libraries.
-If you want to install them with pip run:
-
+You will need python 3.5+ with numpy, pygame, scipy, matplotlib and seaborn libraries.
+If you want to install them with pip run (we recommend to use a virtual environment):
+You could use the requirements.txt file which will install all the requirements
 ```
-python3 -m pip install numpy scipy matplotlib
+python3 -m pip install -r requirements.txt 
+```
+Otherwise you could do it with these commands
+```
+python3 -m pip install numpy scipy matplotlib seaborn
 python3 -m pip install -U pygame 
 ```
 To see if it pygame works, run one of the included examples: 
 ```
 python3 -m pygame.examples.aliens
 ```
+
 
 ## Running the Tests
 

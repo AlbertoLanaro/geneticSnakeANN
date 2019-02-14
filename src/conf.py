@@ -30,7 +30,7 @@ UNIFORMSIZE = 7
 #max fitness 
 MAX_FITNESS = 25
 # visualize the training process
-VISIBLE = False
+VISIBLE = True
 #If we start the simulation from a pull of DNA 
 FROMFILE = False
 #path where the DNA are stored
