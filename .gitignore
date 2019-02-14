@@ -4,3 +4,4 @@ __pycache__
 *.csv
 *.png
 DNA/
+venv/
